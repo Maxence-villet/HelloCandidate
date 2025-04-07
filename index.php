@@ -35,10 +35,12 @@ switch ($request) {
         }
         break;
 
-    case '/logout':
-        require __DIR__ . '/routes/logout.php';
+    case '/notifications':
+        require __DIR__ . '/controllers/NotificationsController.php';
+        $controller = new NotificationsController();
+        $controller->listNotifications();
         break;
-
+            
     default:
         http_response_code(404);
         echo "Page non trouvée";
