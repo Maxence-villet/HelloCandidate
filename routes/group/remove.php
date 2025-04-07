@@ -1,16 +1,18 @@
 <?php
-require_once __DIR__ . '/../controllers/GroupController.php';
+require_once __DIR__ . '/../../controllers/GroupController.php';
 
 $groupController = new GroupController();
 
-$request = $_SERVER['REQUEST_URI'];
-$parts = explode('/', trim($request, '/'));
-$groupId = isset($parts[1]) ? (int)$parts[1] : 0;
-$studentId = isset($parts[2]) ? (int)$parts[2] : 0;
-
-if ($groupId <= 0 || $studentId <= 0) {
-    header('Location: /spectator/dashboard');
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $groupId = isset($_POST['group_id']) ? (int)$_POST['group_id'] : 0;
+    $studentId = isset($_POST['student_id']) ? (int)$_POST['student_id'] : 0;
+    if ($groupId <= 0 || $studentId <= 0) {
+        $groupController->manageGroup($groupId, ["ID de groupe ou d'étudiant invalide."]);
+        exit;
+    }
+    $groupController->removeStudentFromGroup($groupId, $studentId);
+} else {
+    $groupId = isset($_POST['group_id']) ? (int)$_POST['group_id'] : 0;
+    $groupController->manageGroup($groupId, ["Méthode de requête non autorisée. Veuillez utiliser le formulaire pour retirer un étudiant."]);
     exit;
 }
-
-$groupController->removeStudentFromGroup($groupId, $studentId);

@@ -1,16 +1,17 @@
 <?php
-require_once __DIR__ . '/../controllers/GroupController.php';
+require_once __DIR__ . '/../../controllers/GroupController.php';
 
 $groupController = new GroupController();
 
-// Extract group ID from the URL (e.g., /manage-group/1)
-$request = $_SERVER['REQUEST_URI'];
-$parts = explode('/', trim($request, '/'));
-$groupId = isset($parts[1]) ? (int)$parts[1] : 0;
-
-if ($groupId <= 0) {
-    header('Location: /spectator/dashboard');
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $groupId = isset($_POST['group_id']) ? (int)$_POST['group_id'] : 0;
+    if ($groupId <= 0) {
+        $groupController->manageGroup($groupId, ["ID de groupe invalide."]);
+        exit;
+    }
+    $groupController->manageGroup($groupId);
+} else {
+    $groupId = isset($_POST['group_id']) ? (int)$_POST['group_id'] : 0;
+    $groupController->manageGroup($groupId, ["Méthode de requête non autorisée. Veuillez utiliser le tableau de bord pour gérer un groupe."]);
     exit;
 }
-
-$groupController->manageGroup($groupId);

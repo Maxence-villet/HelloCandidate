@@ -56,6 +56,7 @@ switch ($request) {
         require __DIR__ . '/routes/spectator/register.php';
         break;
     case '/spectator/dashboard':
+        $_SESSION['manage_group_id'] = null;
         require __DIR__ . '/routes/spectator/dashboard.php';
         break; 
     case '/group/create':
@@ -68,7 +69,7 @@ switch ($request) {
         require __DIR__ . '/routes/group/add.php';
         break;
     case '/group/remove':
-        require __DIR__ . '/routes/groupe/remove.php';
+        require __DIR__ . '/routes/group/remove.php';
         break;
     default:
         http_response_code(404);

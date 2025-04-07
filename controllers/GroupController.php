@@ -66,7 +66,7 @@ class GroupController {
     }
 
     // Show the group management page
-    public function manageGroup($groupId) {
+    public function manageGroup($groupId, $errors = [], $success = null, $error = null) {
         $this->restrictToSpectators();
 
         $conn = $this->db->getConnection();
@@ -78,25 +78,26 @@ class GroupController {
         $result = $stmt->get_result();
 
         if ($result->num_rows === 0) {
-            header('Location: /spectator/dashboard');
-            exit;
+            $errors[] = "Groupe non trouvé ou accès non autorisé.";
+            // Since we don't want to redirect to /spectator/dashboard, we'll render the view with the error
+            $groupName = "Groupe inconnu";
+            $members = [];
+        } else {
+            $group = $result->fetch_assoc();
+            $groupName = $group['group_name'];
+
+            // Fetch group members with their rank and candidature count
+            $stmt = $conn->prepare("
+                SELECT u.user_id, u.username, u.candidature_count, r.rank_name, r.sub_rank
+                FROM group_members gm
+                JOIN users u ON gm.user_id = u.user_id
+                LEFT JOIN ranks r ON u.rank_id = r.rank_id
+                WHERE gm.group_id = ?
+            ");
+            $stmt->bind_param("i", $groupId);
+            $stmt->execute();
+            $members = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         }
-
-        $group = $result->fetch_assoc();
-        $groupName = $group['group_name'];
-        $stmt->close();
-
-        // Fetch group members with their rank and candidature count
-        $stmt = $conn->prepare("
-            SELECT u.user_id, u.username, u.candidature_count, r.rank_name, r.sub_rank
-            FROM group_members gm
-            JOIN users u ON gm.user_id = u.user_id
-            LEFT JOIN ranks r ON u.rank_id = r.rank_id
-            WHERE gm.group_id = ?
-        ");
-        $stmt->bind_param("i", $groupId);
-        $stmt->execute();
-        $members = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
 
         include __DIR__ . '/../views/group/manage.php';
@@ -107,15 +108,16 @@ class GroupController {
         $this->restrictToSpectators();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /group/manage/' . $groupId);
-            exit;
+            $errors = ["Méthode de requête non autorisée. Veuillez utiliser le formulaire pour ajouter un étudiant."];
+            $this->manageGroup($groupId, $errors);
+            return;
         }
 
-        $identifier = trim($_POST['identifier'] ?? ''); // Can be username or email
+        $username = trim($_POST['username'] ?? '');
         $errors = [];
 
-        if (empty($identifier)) {
-            $errors[] = "Veuillez entrer un nom d'utilisateur ou une adresse e-mail.";
+        if (empty($username)) {
+            $errors[] = "Veuillez entrer un nom d'utilisateur.";
         }
 
         $conn = $this->db->getConnection();
@@ -127,21 +129,31 @@ class GroupController {
         $result = $stmt->get_result();
 
         if ($result->num_rows === 0) {
-            header('Location: /spectator/dashboard');
-            exit;
+            $errors[] = "Groupe non trouvé ou accès non autorisé.";
+            $stmt->close();
+            $this->manageGroup($groupId, $errors);
+            return;
         }
+
+        $group = $result->fetch_assoc();
+        $groupName = $group['group_name'];
         $stmt->close();
 
-        // Find the student by username or email
-        $stmt = $conn->prepare("SELECT user_id FROM users WHERE (username = ? OR email = ?) AND user_type = 'student'");
-        $stmt->bind_param("ss", $identifier, $identifier);
+        if (!empty($errors)) {
+            $this->manageGroup($groupId, $errors);
+            return;
+        }
+
+        // Find the student by username
+        $stmt = $conn->prepare("SELECT user_id FROM users WHERE username = ? AND user_type = 'student'");
+        $stmt->bind_param("s", $username);
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($result->num_rows === 0) {
-            $errors[] = "Aucun étudiant trouvé avec ce nom d'utilisateur ou cette adresse e-mail.";
+            $errors[] = "Aucun étudiant trouvé avec ce nom d'utilisateur.";
             $stmt->close();
-            $this->manageGroup($groupId);
+            $this->manageGroup($groupId, $errors);
             return;
         }
 
@@ -158,7 +170,7 @@ class GroupController {
         if ($count > 0) {
             $errors[] = "Cet étudiant est déjà dans le groupe.";
             $stmt->close();
-            $this->manageGroup($groupId);
+            $this->manageGroup($groupId, $errors);
             return;
         }
         $stmt->close();
@@ -168,10 +180,11 @@ class GroupController {
         $stmt->bind_param("ii", $groupId, $studentId);
 
         if ($stmt->execute()) {
-            header('Location: /group/manage/' . $groupId);
+            $success = "Étudiant ajouté avec succès !";
+            $this->manageGroup($groupId, [], $success);
         } else {
             $errors[] = "Une erreur s'est produite lors de l'ajout de l'étudiant. Veuillez réessayer.";
-            $this->manageGroup($groupId);
+            $this->manageGroup($groupId, $errors);
         }
         $stmt->close();
     }
@@ -189,8 +202,10 @@ class GroupController {
         $result = $stmt->get_result();
 
         if ($result->num_rows === 0) {
-            header('Location: /spectator/dashboard');
-            exit;
+            $errors[] = "Groupe non trouvé ou accès non autorisé.";
+            $stmt->close();
+            $this->manageGroup($groupId, $errors);
+            return;
         }
         $stmt->close();
 
@@ -199,9 +214,11 @@ class GroupController {
         $stmt->bind_param("ii", $groupId, $studentId);
 
         if ($stmt->execute()) {
-            header('Location: /group/manage/' . $groupId);
+            $success = "Étudiant retiré avec succès !";
+            $this->manageGroup($groupId, [], $success);
         } else {
-            header('Location: /group/manage/' . $groupId);
+            $error = "Une erreur s'est produite lors du retrait de l'étudiant.";
+            $this->manageGroup($groupId, [], null, $error);
         }
         $stmt->close();
     }

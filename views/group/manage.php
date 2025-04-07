@@ -1,77 +1,99 @@
-<?php require 'layout.php'; ?>
-    <div class="container mx-auto p-8">
-        <h2 class="text-2xl font-bold mb-6 text-center">Gérer le groupe : <?php echo htmlspecialchars($groupName); ?></h2>
+<?php require __DIR__ . '/../layout.php'; ?>
+<div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto space-y-6">
+        <div class="text-center">
+            <h2 class="text-3xl font-extrabold text-gray-900">Gérer le groupe : <?php echo htmlspecialchars($groupName); ?></h2>
+        </div>
 
-        <?php if (isset($_GET['success'])): ?>
-            <div class="bg-green-100 text-green-700 p-4 rounded mb-4">
-                <?php echo htmlspecialchars($_GET['success']); ?>
+        <!-- Messages d'alerte -->
+        <?php if (isset($success)): ?>
+            <div class="rounded-md bg-green-50 p-4">
+                <p class="text-sm font-medium text-green-800"><?php echo htmlspecialchars($success); ?></p>
             </div>
         <?php endif; ?>
 
-        <?php if (isset($_GET['error'])): ?>
-            <div class="bg-red-100 text-red-700 p-4 rounded mb-4">
-                <?php echo htmlspecialchars($_GET['error']); ?>
+        <?php if (isset($error)): ?>
+            <div class="rounded-md bg-red-50 p-4">
+                <p class="text-sm font-medium text-red-800"><?php echo htmlspecialchars($error); ?></p>
             </div>
         <?php endif; ?>
 
         <?php if (!empty($errors)): ?>
-            <div class="bg-red-100 text-red-700 p-4 rounded mb-4">
-                <ul>
+            <div class="rounded-md bg-red-50 p-4">
+                <ul class="list-disc pl-5 space-y-1">
                     <?php foreach ($errors as $error): ?>
-                        <li><?php echo htmlspecialchars($error); ?></li>
+                        <li class="text-sm font-medium text-red-800"><?php echo htmlspecialchars($error); ?></li>
                     <?php endforeach; ?>
                 </ul>
             </div>
         <?php endif; ?>
 
-        <!-- Form to add a student -->
-        <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
-            <h3 class="text-xl font-semibold mb-4">Ajouter un étudiant</h3>
-            <form action="/group/add/<?php echo $groupId; ?>" method="POST">
-                <div class="mb-4">
-                    <label for="identifier" class="block text-gray-700">Nom d'utilisateur ou e-mail de l'étudiant</label>
-                    <input type="text" name="identifier" id="identifier" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                </div>
-                <button type="submit" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Ajouter</button>
-            </form>
+        <!-- Formulaire d'ajout d'étudiant -->
+        <div class="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-200">
+            <div class="p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Ajouter un étudiant</h3>
+                <form action="/group/add" method="POST">
+                    <input type="hidden" name="group_id" value="<?php echo $groupId; ?>">
+                    <div class="mb-4">
+                        <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Nom d'utilisateur de l'étudiant</label>
+                        <input type="text" name="username" id="username" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <button type="submit" 
+                        class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Ajouter
+                    </button>
+                </form>
+            </div>
         </div>
 
-        <!-- List of group members -->
-        <div class="bg-white p-6 rounded-lg shadow-lg">
-            <h3 class="text-xl font-semibold mb-4">Membres du groupe</h3>
-            <?php if (empty($members)): ?>
-                <p class="text-gray-600">Aucun étudiant dans ce groupe pour le moment.</p>
-            <?php else: ?>
-                <table class="w-full text-left">
-                    <thead>
-                        <tr>
-                            <th class="p-2 border-b">Nom d'utilisateur</th>
-                            <th class="p-2 border-b">Rang</th>
-                            <th class="p-2 border-b">Nombre de candidatures</th>
-                            <th class="p-2 border-b">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($members as $member): ?>
-                            <tr>
-                                <td class="p-2 border-b"><?php echo htmlspecialchars($member['username']); ?></td>
-                                <td class="p-2 border-b">
-                                    <?php echo $member['rank_name'] ? htmlspecialchars($member['rank_name'] . ' ' . $member['sub_rank']) : 'Non classé'; ?>
-                                </td>
-                                <td class="p-2 border-b"><?php echo htmlspecialchars($member['candidature_count']); ?></td>
-                                <td class="p-2 border-b">
-                                    <a href="/remove-student-from-group/<?php echo $groupId; ?>/<?php echo $member['user_id']; ?>" class="text-red-500 hover:underline">Retirer</a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            <?php endif; ?>
+        <!-- Liste des membres du groupe -->
+        <div class="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-200">
+            <div class="p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Membres du groupe</h3>
+                <?php if (empty($members)): ?>
+                    <p class="text-sm text-gray-500 text-center py-4">Aucun étudiant dans ce groupe pour le moment.</p>
+                <?php else: ?>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom d'utilisateur</th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rang</th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidatures</th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <?php foreach ($members as $member): ?>
+                                <tr>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900"><?php echo htmlspecialchars($member['username']); ?></td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                        <?php echo $member['rank_name'] ? htmlspecialchars($member['rank_name'] . ' ' . $member['sub_rank']) : 'Non classé'; ?>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500"><?php echo htmlspecialchars($member['candidature_count']); ?></td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                                        <form action="/group/remove" method="POST">
+                                            <input type="hidden" name="group_id" value="<?php echo $groupId; ?>">
+                                            <input type="hidden" name="student_id" value="<?php echo $member['user_id']; ?>">
+                                            <button type="submit" class="text-red-600 hover:text-red-900">Retirer</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
 
-        <p class="mt-6 text-center">
-            <a href="/spectator-dashboard" class="text-blue-500 hover:underline">Retour au tableau de bord</a>
-        </p>
+        <div class="text-center pt-4">
+            <a href="/spectator/dashboard" class="text-sm font-medium text-blue-600 hover:text-blue-500">
+                ← Retour au tableau de bord
+            </a>
+        </div>
     </div>
+</div>
 </body>
 </html>
