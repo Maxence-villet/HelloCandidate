@@ -8,7 +8,12 @@
 </head>
 <body class="bg-gray-100">
     <?php include __DIR__ . '/../../utils/header.php'; ?>
-    
+    <?php if (isset($_SESSION['rank_up_message'])): ?>
+        <div class="bg-blue-600 text-white p-4 rounded-lg shadow-lg mx-auto max-w-lg text-center animate-bounce">
+            <p class="font-semibold"><?php echo htmlspecialchars($_SESSION['rank_up_message']); ?></p>
+        </div>
+        <?php unset($_SESSION['rank_up_message']); // Supprimer après affichage ?>
+    <?php endif; ?>
     <div class="container mx-auto py-8 px-4">
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-2xl font-bold text-indigo-700">Mes candidatures</h1>

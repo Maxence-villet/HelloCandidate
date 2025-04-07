@@ -1,7 +1,6 @@
 <?php
-// controllers/ApplicationsController.php
+// controllers/ApplicationController.php
 require_once __DIR__ . '/../utils/database.php';
-require_once __DIR__ . '/../utils/FileUploader.php'; // Inclure la classe FileUploader
 
 class ApplicationController {
     private $db;
@@ -36,21 +35,21 @@ class ApplicationController {
         $offerLink = trim($_POST['offer_link'] ?? '');
         $description = trim($_POST['description'] ?? '');
         
-        // Gestion du fichier de lettre de motivation avec FileUploader
+        // Gestion du fichier de lettre de motivation
         $coverLetterPath = null;
-        $errors = [];
-        if (isset($_FILES['cover_letter']) && $_FILES['cover_letter']['error'] !== UPLOAD_ERR_NO_FILE) {
-            try {
-                $coverLetterPath = FileUploader::uploadPdf($_FILES['cover_letter'], $userId);
-            } catch (RuntimeException $e) {
-                $errors[] = $e->getMessage();
+        if (isset($_FILES['cover_letter']) && $_FILES['cover_letter']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = __DIR__ . '/../uploads/cover_letters/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
             }
-        }
-
-        // Si des erreurs ont été détectées lors du téléversement, afficher le formulaire avec les erreurs
-        if (!empty($errors)) {
-            include __DIR__ . '/../views/applications/add.php';
-            return;
+            
+            $fileExt = pathinfo($_FILES['cover_letter']['name'], PATHINFO_EXTENSION);
+            $fileName = 'user_' . $userId . '_' . time() . '.' . $fileExt;
+            $targetPath = $uploadDir . $fileName;
+            
+            if (move_uploaded_file($_FILES['cover_letter']['tmp_name'], $targetPath)) {
+                $coverLetterPath = '/uploads/cover_letters/' . $fileName;
+            }
         }
 
         $conn = $this->db->getConnection();
@@ -65,8 +64,11 @@ class ApplicationController {
             // Mettre à jour le compteur de candidatures
             $this->updateApplicationCount($userId);
             
-            // Ajouter une notification
+            // Ajouter une notification pour l'ajout de candidature
             $this->addNotification($userId, "Votre candidature chez $companyName a été enregistrée avec succès !");
+
+            // Vérifier si l'utilisateur a monté de rang ou sous-rang
+            $this->checkRankProgression($userId);
             
             // Stocker le message de succès dans la session
             $_SESSION['success_message'] = 'Candidature ajoutée avec succès';
@@ -91,6 +93,45 @@ class ApplicationController {
         $stmt->close();
     }
 
+    private function checkRankProgression($userId) {
+        $conn = $this->db->getConnection();
+
+        // Récupérer le candidature_count et le rank_id actuel
+        $stmt = $conn->prepare("SELECT candidature_count, rank_id FROM users WHERE user_id = ?");
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
+        $stmt->close();
+
+        $candidatureCount = $user['candidature_count'] ?? 0;
+        $currentRankId = $user['rank_id'];
+
+        // Déterminer le rang actuel en fonction de candidature_count
+        $stmt = $conn->prepare("SELECT rank_id, rank_name, sub_rank, min_applications FROM ranks WHERE min_applications <= ? ORDER BY min_applications DESC LIMIT 1");
+        $stmt->bind_param("i", $candidatureCount);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $newRank = $result->fetch_assoc();
+        $stmt->close();
+
+        $newRankId = $newRank['rank_id'] ?? 1; // Par défaut, Fer 3 (rank_id = 1)
+
+        // Vérifier si l'utilisateur a monté de rang ou sous-rang
+        if (is_null($currentRankId) || $newRankId > $currentRankId) {
+            // Mettre à jour le rank_id de l'utilisateur
+            $stmt = $conn->prepare("UPDATE users SET rank_id = ? WHERE user_id = ?");
+            $stmt->bind_param("ii", $newRankId, $userId);
+            $stmt->execute();
+            $stmt->close();
+
+            // Générer une notification pour la montée de rang/sous-rang
+            $message = "Félicitations ! Vous êtes passé à " . $newRank['rank_name'] . " " . $newRank['sub_rank'] . " !";
+            $this->addNotification($userId, $message);
+            $_SESSION['rank_up_message'] = $message; // Stocker le message pour l'afficher
+        }
+    }
+
     public function listApplications() {
         if (!isset($_SESSION['user_id'])) {
             header('Location: /login');
@@ -98,7 +139,7 @@ class ApplicationController {
         }
     
         $userId = $_SESSION['user_id'];
-        // Utiliser $_POST pour les paramètres de recherche
+        // Utiliser $_POST au lieu de $_GET
         $searchQuery = trim($_POST['search'] ?? '');
         $statusFilter = $_POST['status'] ?? null;
         $dateFrom = $_POST['date_from'] ?? null;

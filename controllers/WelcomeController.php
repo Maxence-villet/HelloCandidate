@@ -31,44 +31,44 @@ class WelcomeController {
         $stmt->close();
 
         $candidatureCount = $user['candidature_count'] ?? 0;
-        $rankId = $user['rank_id'];
+        $currentRankId = $user['rank_id'];
 
-        // Si rank_id est NULL, déterminer le rang en fonction de candidature_count
-        if (is_null($rankId)) {
-            $stmt = $conn->prepare("SELECT rank_id, min_applications FROM ranks WHERE min_applications <= ? ORDER BY min_applications DESC LIMIT 1");
-            $stmt->bind_param("i", $candidatureCount);
+        // Déterminer le rang actuel en fonction de candidature_count
+        $stmt = $conn->prepare("SELECT rank_id, rank_name, sub_rank, min_applications FROM ranks WHERE min_applications <= ? ORDER BY min_applications DESC LIMIT 1");
+        $stmt->bind_param("i", $candidatureCount);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $newRank = $result->fetch_assoc();
+        $stmt->close();
+
+        $newRankId = $newRank['rank_id'] ?? 1; // Par défaut, Fer 3 (rank_id = 1)
+
+        // Vérifier si l'utilisateur a monté de rang ou sous-rang
+        if (is_null($currentRankId) || $newRankId > $currentRankId) {
+            // Mettre à jour le rank_id de l'utilisateur
+            $stmt = $conn->prepare("UPDATE users SET rank_id = ? WHERE user_id = ?");
+            $stmt->bind_param("ii", $newRankId, $userId);
             $stmt->execute();
-            $result = $stmt->get_result();
-            $rank = $result->fetch_assoc();
             $stmt->close();
 
-            if ($rank) {
-                $rankId = $rank['rank_id'];
-                // Mettre à jour le rank_id de l'utilisateur
-                $stmt = $conn->prepare("UPDATE users SET rank_id = ? WHERE user_id = ?");
-                $stmt->bind_param("ii", $rankId, $userId);
-                $stmt->execute();
-                $stmt->close();
-            } else {
-                // Si aucune correspondance (peu probable), définir le rang le plus bas (Fer 3, rank_id = 1)
-                $rankId = 1;
-                $stmt = $conn->prepare("UPDATE users SET rank_id = ? WHERE user_id = ?");
-                $stmt->bind_param("ii", $rankId, $userId);
-                $stmt->execute();
-                $stmt->close();
-            }
+            // Générer une notification pour la montée de rang/sous-rang
+            $message = "Félicitations ! Vous êtes passé à " . $newRank['rank_name'] . " " . $newRank['sub_rank'] . " !";
+            $stmt = $conn->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
+            $stmt->bind_param("is", $userId, $message);
+            $stmt->execute();
+            $stmt->close();
         }
 
         // Récupérer les informations du rang actuel
         $stmt = $conn->prepare("SELECT rank_name, sub_rank, min_applications FROM ranks WHERE rank_id = ?");
-        $stmt->bind_param("i", $rankId);
+        $stmt->bind_param("i", $newRankId);
         $stmt->execute();
         $result = $stmt->get_result();
         $currentRank = $result->fetch_assoc();
         $stmt->close();
 
         // Récupérer le min_applications du sous-rang suivant (si existant)
-        $nextRankId = $rankId + 1;
+        $nextRankId = $newRankId + 1;
         $stmt = $conn->prepare("SELECT min_applications FROM ranks WHERE rank_id = ?");
         $stmt->bind_param("i", $nextRankId);
         $stmt->execute();
