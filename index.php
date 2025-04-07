@@ -35,6 +35,12 @@ switch ($request) {
         }
         break;
 
+    case '/rankings':
+        require __DIR__ . '/controllers/RankingController.php';
+        $controller = new RankingController();
+        $controller->showRanking();
+        break;
+
     case '/notifications':
         require __DIR__ . '/controllers/NotificationsController.php';
         $controller = new NotificationsController();
