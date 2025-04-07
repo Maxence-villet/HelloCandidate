@@ -34,6 +34,11 @@ switch ($request) {
             $controller->showApplicationForm();
         }
         break;
+
+    case '/logout':
+        require __DIR__ . '/routes/logout.php';
+        break;
+
     default:
         http_response_code(404);
         echo "Page non trouvée";

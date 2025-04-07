@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100">
-    <?php include __DIR__ . '/../../views/partials/header.php'; ?>
+    <?php include __DIR__ . '/../../utils/header.php'; ?>
     
     <div class="container mx-auto py-8 px-4">
         <div class="flex justify-between items-center mb-8">
