@@ -7,5 +7,7 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Inclure la vue de bienvenue
-include __DIR__ . '/../views/welcome.php';
+require_once __DIR__ . '/../controllers/WelcomeController.php';
+
+$welcomeController = new WelcomeController();
+$welcomeController->showWelcomePage();

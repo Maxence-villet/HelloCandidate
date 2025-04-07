@@ -40,7 +40,12 @@ switch ($request) {
         $controller = new NotificationsController();
         $controller->listNotifications();
         break;
-            
+    
+    case '/logout':
+        require __DIR__ . '/controllers/AuthController.php';
+        $controller = new AuthController();
+        $controller->logout();
+        break;
     default:
         http_response_code(404);
         echo "Page non trouvée";
