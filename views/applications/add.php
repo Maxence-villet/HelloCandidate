@@ -3,7 +3,7 @@
     session_start();
 
     if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'spectator') {
-        header('Location: /spectator-dashboard');
+        header('Location: /spectator/dashboard');
         exit;
     }
 

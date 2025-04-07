@@ -3,7 +3,7 @@
     session_start();
 
     if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'spectator') {
-        header('Location: /spectator-dashboard');
+        header('Location: /spectator/dashboard');
         exit;
     }
 
@@ -14,7 +14,7 @@
 
     include __DIR__ . '/../../utils/header.php'; 
     
-    ?>
+?>
     <?php if (isset($_SESSION['rank_up_message'])): ?>
         <div class="bg-blue-600 text-white p-4 rounded-lg shadow-lg mx-auto max-w-lg text-center animate-bounce">
             <p class="font-semibold"><?php echo htmlspecialchars($_SESSION['rank_up_message']); ?></p>
