@@ -53,7 +53,22 @@ switch ($request) {
         $controller->logout();
         break;
     case '/spectator/register':
-        require __DIR__ . '/routes/spectator_register.php';
+        require __DIR__ . '/routes/spectator/register.php';
+        break;
+    case '/spectator/dashboard':
+        require __DIR__ . '/routes/spectator/dashboard.php';
+        break; 
+    case '/group/create':
+        require __DIR__ . '/routes/group/create.php';
+        break;
+    case '/group/manage':
+        require __DIR__ . '/routes/group/manage.php';
+        break;
+    case '/group/add':
+        require __DIR__ . '/routes/group/add.php';
+        break;
+    case '/group/remove':
+        require __DIR__ . '/routes/groupe/remove.php';
         break;
     default:
         http_response_code(404);
