@@ -52,6 +52,9 @@ switch ($request) {
         $controller = new AuthController();
         $controller->logout();
         break;
+    case '/spectator/register':
+        require __DIR__ . '/routes/spectator_register.php';
+        break;
     default:
         http_response_code(404);
         echo "Page non trouvée";

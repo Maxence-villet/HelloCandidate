@@ -140,4 +140,63 @@ class AuthController {
         header('Location: /login');
         exit;
     }
+
+    public function showSpectatorRegisterForm() {
+        include __DIR__ . '/../views/spectator_register.php';
+    }
+
+    public function registerSpectator() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /spectator/register');
+            exit;
+        }
+
+        $username = trim($_POST['username'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $password = $_POST['password'] ?? '';
+        $confirmPassword = $_POST['confirm_password'] ?? '';
+
+        $errors = [];
+        if (empty($username) || strlen($username) < 3) {
+            $errors[] = "Le nom d'utilisateur doit contenir au moins 3 caractères.";
+        }
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = "L'adresse e-mail n'est pas valide.";
+        }
+        if (strlen($password) < 6) {
+            $errors[] = "Le mot de passe doit contenir au moins 6 caractères.";
+        }
+        if ($password !== $confirmPassword) {
+            $errors[] = "Les mots de passe ne correspondent pas.";
+        }
+
+        $conn = $this->db->getConnection();
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM users WHERE username = ? OR email = ?");
+        $stmt->bind_param("ss", $username, $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $count = $result->fetch_row()[0];
+        if ($count > 0) {
+            $errors[] = "Le nom d'utilisateur ou l'e-mail est déjà utilisé.";
+        }
+        $stmt->close();
+
+        if (!empty($errors)) {
+            include __DIR__ . '/../views/spectator_register.php';
+            return;
+        }
+
+        $passwordHash = password_hash($password, PASSWORD_BCRYPT);
+        $userType = 'spectator'; // Set user type to spectator
+        $stmt = $conn->prepare("INSERT INTO users (username, email, password_hash, user_type) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("ssss", $username, $email, $passwordHash, $userType);
+
+        if ($stmt->execute()) {
+            header('Location: /login');
+        } else {
+            $errors[] = "Une erreur s'est produite lors de l'inscription. Veuillez réessayer.";
+            include __DIR__ . '/../views/spectator_register.php';
+        }
+        $stmt->close();
+    }
 }
