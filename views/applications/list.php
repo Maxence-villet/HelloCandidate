@@ -1,13 +1,20 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mes candidatures - HelloCandidate</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-100">
-    <?php include __DIR__ . '/../../utils/header.php'; ?>
+<?php 
+    
+    session_start();
+
+    if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'spectator') {
+        header('Location: /spectator-dashboard');
+        exit;
+    }
+
+    if (!isset($_SESSION['user_id'])) {
+        header('Location: /login');
+        exit;
+    }
+
+    include __DIR__ . '/../../utils/header.php'; 
+    
+    ?>
     <?php if (isset($_SESSION['rank_up_message'])): ?>
         <div class="bg-blue-600 text-white p-4 rounded-lg shadow-lg mx-auto max-w-lg text-center animate-bounce">
             <p class="font-semibold"><?php echo htmlspecialchars($_SESSION['rank_up_message']); ?></p>

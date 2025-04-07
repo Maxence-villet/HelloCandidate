@@ -1,8 +1,4 @@
 <?php
-// utils/header.php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 
 // Vérifier si l'utilisateur est connecté
 $isLoggedIn = isset($_SESSION['user_id']);

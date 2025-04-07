@@ -1,13 +1,20 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ajouter une candidature - HelloCandidate</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-100">
-    <?php include __DIR__ . '/../../views/partials/header.php'; ?>
+<?php 
+    
+    session_start();
+
+    if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'spectator') {
+        header('Location: /spectator-dashboard');
+        exit;
+    }
+
+    if (!isset($_SESSION['user_id'])) {
+        header('Location: /login');
+        exit;
+    }
+
+    include __DIR__ . '/../../utils/header.php'; 
+    
+?>
     
     <div class="container mx-auto py-8 px-4">
         <h1 class="text-2xl font-bold text-indigo-700 mb-8">Ajouter une candidature</h1>
