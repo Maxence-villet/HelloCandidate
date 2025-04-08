@@ -142,7 +142,7 @@ class AuthController {
     }
 
     public function showSpectatorRegisterForm() {
-        include __DIR__ . '/../views/spectator_register.php';
+        include __DIR__ . '/../views/spectator/register.php';
     }
 
     public function registerSpectator() {

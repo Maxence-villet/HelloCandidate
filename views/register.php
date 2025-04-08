@@ -30,10 +30,10 @@
                     <label for="confirm_password" class="block text-sm font-medium text-gray-700">Confirmer le mot de passe</label>
                     <input type="password" name="confirm_password" id="confirm_password" class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" required>
                 </div>
-                <button type="submit" class="w-full bg-indigo-600 text-white p-2 rounded-md hover:bg-indigo-700">S'inscrire</button>
+                <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-indigo-700">S'inscrire</button>
             </form>
             <p class="mt-4 text-center text-sm text-gray-600">
-                Déjà un compte ? <a href="/login" class="text-indigo-600 hover:underline">Se connecter</a>
+                Déjà un compte ? <a href="/login" class="text-blue-600 hover:underline">Se connecter</a>
             </p>
         </div>
     </div>

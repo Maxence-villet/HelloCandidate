@@ -23,8 +23,8 @@
     <?php endif; ?>
     <div class="container mx-auto py-8 px-4">
         <div class="flex justify-between items-center mb-8">
-            <h1 class="text-2xl font-bold text-indigo-700">Mes candidatures</h1>
-            <a href="/applications/add" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+            <h1 class="text-2xl font-bold text-gray-900">Mes candidatures</h1>
+            <a href="/applications/add" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
                 + Ajouter une candidature
             </a>
         </div>
@@ -40,7 +40,7 @@
             <!-- Les liens de filtrage rapide soumettent le formulaire avec un statut spécifique -->
             <form id="filter-form" action="/applications" method="POST" class="flex space-x-2">
                 <input type="hidden" name="status" id="status-hidden">
-                <button type="submit" onclick="document.getElementById('status-hidden').value=''" class="px-4 py-2 <?php echo !isset($_POST['status']) ? 'bg-indigo-600 text-white' : 'bg-gray-200'; ?> rounded-md">
+                <button type="submit" onclick="document.getElementById('status-hidden').value=''" class="px-4 py-2 <?php echo !isset($_POST['status']) ? 'bg-blue-600 text-white' : 'bg-gray-200'; ?> rounded-md">
                     Toutes
                 </button>
                 <button type="submit" onclick="document.getElementById('status-hidden').value='pending'" class="px-4 py-2 <?php echo ($_POST['status'] ?? '') === 'pending' ? 'bg-yellow-600 text-white' : 'bg-gray-200'; ?> rounded-md">
@@ -67,7 +67,7 @@
                         <div class="relative">
                             <input type="text" name="search" id="search" value="<?= htmlspecialchars($_POST['search'] ?? '') ?>" 
                                 placeholder="Entreprise, poste ou description..." 
-                                class="block w-full pl-4 pr-10 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                class="block w-full pl-4 pr-10 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
                             <button type="submit" class="absolute right-2 top-2 text-gray-400 hover:text-gray-500">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
@@ -79,7 +79,7 @@
                     <!-- Filtre par statut -->
                     <div>
                         <label for="status" class="sr-only">Statut</label>
-                        <select name="status" id="status" class="block w-full py-2 px-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                        <select name="status" id="status" class="block w-full py-2 px-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
                             <option value="">Tous statuts</option>
                             <option value="pending" <?= ($_POST['status'] ?? '') === 'pending' ? 'selected' : '' ?>>En attente</option>
                             <option value="interview" <?= ($_POST['status'] ?? '') === 'interview' ? 'selected' : '' ?>>Entretien</option>
@@ -90,7 +90,7 @@
 
                     <!-- Bouton de recherche -->
                     <div>
-                        <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                             Filtrer
                         </button>
                     </div>
@@ -101,12 +101,12 @@
                     <div>
                         <label for="date_from" class="block text-sm font-medium text-gray-700">À partir du</label>
                         <input type="date" name="date_from" id="date_from" value="<?= htmlspecialchars($_POST['date_from'] ?? '') ?>"
-                            class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                            class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     <div>
                         <label for="date_to" class="block text-sm font-medium text-gray-700">Jusqu'au</label>
                         <input type="date" name="date_to" id="date_to" value="<?= htmlspecialchars($_POST['date_to'] ?? '') ?>"
-                            class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                            class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     <div>
                         <button type="submit" name="reset" value="1" class="inline-block w-full bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300 text-center">
@@ -142,7 +142,7 @@
                     <h3 class="mt-2 text-sm font-medium text-gray-900">Aucune candidature trouvée</h3>
                     <p class="mt-1 text-sm text-gray-500">Essayez d'ajuster vos critères de recherche.</p>
                     <div class="mt-6">
-                        <a href="/applications/add" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <a href="/applications/add" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
                             </svg>
@@ -173,7 +173,7 @@
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-gray-900"><?php echo htmlspecialchars($app['position']); ?></div>
                                 <?php if ($app['offer_link']): ?>
-                                    <a href="<?php echo htmlspecialchars($app['offer_link']); ?>" target="_blank" class="text-sm text-indigo-600 hover:underline">Voir l'offre</a>
+                                    <a href="<?php echo htmlspecialchars($app['offer_link']); ?>" target="_blank" class="text-sm text-blue-600 hover:underline">Voir l'offre</a>
                                 <?php endif; ?>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -199,9 +199,9 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <a href="/applications/view/<?php echo $app['application_id']; ?>" class="text-indigo-600 hover:text-indigo-900 mr-3">Voir</a>
+                                <a href="/applications/view/<?php echo $app['application_id']; ?>" class="text-blue-600 hover:text-blue-900 mr-3">Voir</a>
                                 <?php if ($app['cover_letter_path']): ?>
-                                    <a href="<?php echo "public" . $app['cover_letter_path']; ?>" target="_blank" class="text-indigo-600 hover:text-indigo-900">Lettre</a>
+                                    <a href="<?php echo "public" . $app['cover_letter_path']; ?>" target="_blank" class="text-blue-600 hover:text-blue-900">Lettre</a>
                                 <?php endif; ?>
                             </td>
                         </tr>

@@ -22,16 +22,16 @@
             <form action="/login" method="POST" class="space-y-4">
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700">Adresse e-mail</label>
-                    <input type="email" name="email" id="email" value="<?php echo htmlspecialchars($email ?? ''); ?>" class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" required>
+                    <input type="email" name="email" id="email" value="<?php echo htmlspecialchars($email ?? ''); ?>" class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required>
                 </div>
                 <div>
                     <label for="password" class="block text-sm font-medium text-gray-700">Mot de passe</label>
-                    <input type="password" name="password" id="password" class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" required>
+                    <input type="password" name="password" id="password" class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required>
                 </div>
-                <button type="submit" class="w-full bg-indigo-600 text-white p-2 rounded-md hover:bg-indigo-700">Se connecter</button>
+                <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700">Se connecter</button>
             </form>
             <p class="mt-4 text-center text-sm text-gray-600">
-                Pas encore de compte ? <a href="/register" class="text-indigo-600 hover:underline">S'inscrire</a>
+                Pas encore de compte ? <a href="/register" class="text-blue-600 hover:underline">S'inscrire</a>
             </p>
         </div>
     </div>
