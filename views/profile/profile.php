@@ -27,7 +27,13 @@
             <div class="col-span-1 bg-white shadow-sm rounded-lg overflow-hidden border border-gray-200 p-6">
                 <!-- Rank Image -->
                 <div class="flex justify-center mb-4">
-                    <img src="/assets/ranks/<?php echo strtolower($user['rank_name']); ?>.png" alt="<?php echo htmlspecialchars($user['rank_name']); ?>" class="w-24 h-24">
+                    <?php
+                    // Normalize the rank_name to match the image filename
+                    $rankImageName = strtolower($user['rank_name']);
+                    $rankImageName = str_replace(' ', '-', $rankImageName); // e.g., "Grand Master" -> "grand-master"
+                    $rankImagePath = "/public/rank/{$rankImageName}.png";
+                    ?>
+                    <img src="<?php echo htmlspecialchars($rankImagePath); ?>" alt="<?php echo htmlspecialchars($user['rank_name']); ?>" class="w-24 h-24">
                 </div>
 
                 <!-- Rank and Sub-Rank Info -->
