@@ -2,6 +2,9 @@
 $request = $_SERVER['REQUEST_URI'];
 
 switch ($request) {
+    case '/':
+        require __DIR__ . '/routes/index.php';
+        break;
     case '/register':
         require __DIR__ . '/routes/register.php';
         break;
@@ -80,7 +83,7 @@ switch ($request) {
             header('Location: /login');
             exit;
         }
-        echo "Page d'aide - À implémenter.";
+        require __DIR__ . '/routes/help.php';
         break;
     default:
         http_response_code(404);
