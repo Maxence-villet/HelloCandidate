@@ -222,4 +222,78 @@ class GroupController {
         }
         $stmt->close();
     }
+
+    public function viewStudentProfile($userId, $username) {
+        $this->restrictToSpectators();
+
+        $conn = $this->db->getConnection();
+
+        // Verify that the user is a student and is in one of the spectator's groups
+        $stmt = $conn->prepare("
+            SELECT u.user_id
+            FROM users u
+            JOIN group_members gm ON u.user_id = gm.user_id
+            JOIN groups g ON gm.group_id = g.group_id
+            WHERE u.user_id = ? AND u.user_type = 'student' AND g.created_by = ?
+        ");
+        $stmt->bind_param("ii", $userId, $_SESSION['user_id']);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows === 0) {
+            header('Location: /spectator/dashboard');
+            exit;
+        }
+        $stmt->close();
+
+        // Fetch the student's applications (anonymized: only company_name, position, status)
+        $stmt = $conn->prepare("
+            SELECT company_name, position, status
+            FROM applications
+            WHERE user_id = ?
+            ORDER BY submission_date DESC
+        ");
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $applications = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+
+        // Calculate application statistics for the last 4 weeks (28 days)
+        $endDate = date('Y-m-d');
+        $startDate = date('Y-m-d', strtotime('-27 days')); // 28 days total (4 weeks)
+
+        // Fetch daily application counts (most recent to oldest)
+        $stmt = $conn->prepare("
+            SELECT DATE(submission_date) as submission_day, COUNT(*) as application_count
+            FROM applications
+            WHERE user_id = ? AND submission_date BETWEEN ? AND ?
+            GROUP BY DATE(submission_date)
+            ORDER BY submission_date DESC
+        ");
+        $stmt->bind_param("iss", $userId, $startDate, $endDate);
+        $stmt->execute();
+        $dailyCountsResult = $stmt->get_result();
+        $dailyCounts = [];
+        while ($row = $dailyCountsResult->fetch_assoc()) {
+            $dailyCounts[$row['submission_day']] = $row['application_count'];
+        }
+        $stmt->close();
+
+        // Calculate average applications per day
+        $totalApplications = array_sum($dailyCounts);
+        $daysWithApplications = count($dailyCounts);
+        $averagePerDay = $daysWithApplications > 0 ? round($totalApplications / 28, 2) : 0;
+
+        // Build the daily stats array for the last 28 days (most recent to oldest)
+        $dailyStats = [];
+        for ($i = 0; $i < 28; $i++) {
+            $date = date('Y-m-d', strtotime("$endDate - $i days"));
+            $dailyStats[$date] = [
+                'date' => $date,
+                'count' => isset($dailyCounts[$date]) ? $dailyCounts[$date] : 0,
+            ];
+        }
+
+        include __DIR__ . '/../views/profile/stats.php';
+    }
 }

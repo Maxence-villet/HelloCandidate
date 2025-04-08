@@ -1,8 +1,7 @@
 <?php
-
 // Vérifier si l'utilisateur est connecté
 $isLoggedIn = isset($_SESSION['user_id']);
-$username = $isLoggedIn ? htmlspecialchars($_SESSION['username']) : 'Invité';
+$sessionUsername = $isLoggedIn ? htmlspecialchars($_SESSION['username']) : 'Invité'; // Renamed to avoid conflict
 ?>
 
 <!DOCTYPE html>
@@ -25,14 +24,14 @@ $username = $isLoggedIn ? htmlspecialchars($_SESSION['username']) : 'Invité';
             </div>
 
             <!-- Menu principal (visible sur desktop) -->
-            <div class="hidden md:flex items-center space-x-6 ">
+            <div class="hidden md:flex items-center space-x-6">
                 <?php if ($isLoggedIn): ?>
                     <a href="/applications" class="text-gray-800 hover:text-blue-600 transition-colors duration-200">Mes candidatures</a>
                     <a href="/rankings" class="text-gray-800 hover:text-blue-600 transition-colors duration-200">Classement</a>
                     <a href="/notifications" class="text-gray-800 hover:text-blue-600 transition-colors duration-200">Notifications</a>
                     <a href="/profile" class="text-gray-800 hover:text-blue-600 transition-colors duration-200">Profil</a>
                     <div class="flex items-center space-x-3">
-                        <span class="text-gray-800 font-medium"><?php echo $username; ?></span>
+                        <span class="text-gray-800 font-medium"><?php echo $sessionUsername; ?></span>
                         <a href="/logout" class="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200">
                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
@@ -65,14 +64,14 @@ $username = $isLoggedIn ? htmlspecialchars($_SESSION['username']) : 'Invité';
 
         <!-- Menu mobile (caché par défaut, affiché via JavaScript) -->
         <div id="mobile-menu" class="md:hidden bg-white border-t border-gray-200 max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
-            <div class="container mx-auto px-4 py-4 space-y-3  bg-gray-100">
+            <div class="container mx-auto px-4 py-4 space-y-3 bg-gray-100">
                 <?php if ($isLoggedIn): ?>
                     <a href="/applications" class="block text-gray-800 hover:text-blue-600 transition-colors duration-200 py-2">Mes candidatures</a>
                     <a href="/rankings" class="block text-gray-800 hover:text-blue-600 transition-colors duration-200 py-2">Classement</a>
                     <a href="/notifications" class="block text-gray-800 hover:text-blue-600 transition-colors duration-200 py-2">Notifications</a>
                     <a href="/profile" class="block text-gray-800 hover:text-blue-600 transition-colors duration-200 py-2">Profil</a>
                     <div class="border-t border-gray-200 pt-3">
-                        <span class="block text-gray-800 font-medium py-2"><?php echo $username; ?></span>
+                        <span class="block text-gray-800 font-medium py-2"><?php echo $sessionUsername; ?></span>
                         <a href="/logout" class="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200">
                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>

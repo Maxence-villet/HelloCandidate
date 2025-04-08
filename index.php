@@ -71,6 +71,12 @@ switch ($request) {
     case '/group/remove':
         require __DIR__ . '/routes/group/remove.php';
         break;
+    case '/profile/stats':
+        require __DIR__ . '/routes/profile/stats.php';
+        break;
+    case '/profile':
+        require __DIR__ . '/routes/profile/profile.php';
+    break;
     default:
         http_response_code(404);
         echo "Page non trouvée";

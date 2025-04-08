@@ -13,8 +13,8 @@
         <?php endif; ?>
 
         <?php if (isset($error)): ?>
-            <div class="rounded-md bg-red-50 p-4">
-                <p class="text-sm font-medium text-red-800"><?php echo htmlspecialchars($error); ?></p>
+            <div class="rounded-md bg-green-50 p-4">
+                <p class="text-sm font-medium text-green-800"><?php echo htmlspecialchars($error); ?></p>
             </div>
         <?php endif; ?>
 
@@ -68,7 +68,15 @@
                             <tbody class="bg-white divide-y divide-gray-200">
                                 <?php foreach ($members as $member): ?>
                                 <tr>
-                                    <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900"><?php echo htmlspecialchars($member['username']); ?></td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        <form action="/profile/stats" method="POST">
+                                            <input type="hidden" name="user_id" value="<?php echo $member['user_id']; ?>">
+                                            <input type="hidden" name="username" value="<?php echo htmlspecialchars($member['username']); ?>">
+                                            <button type="submit" class="text-blue-600 hover:text-blue-900">
+                                                <?php echo htmlspecialchars($member['username']); ?>
+                                            </button>
+                                        </form>
+                                    </td>
                                     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                                         <?php echo $member['rank_name'] ? htmlspecialchars($member['rank_name'] . ' ' . $member['sub_rank']) : 'Non classé'; ?>
                                     </td>
