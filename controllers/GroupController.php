@@ -113,11 +113,11 @@ class GroupController {
             return;
         }
 
-        $username = trim($_POST['username'] ?? '');
+        $identifier = trim($_POST['identifier'] ?? ''); // Changed from 'username' to 'identifier'
         $errors = [];
 
-        if (empty($username)) {
-            $errors[] = "Veuillez entrer un nom d'utilisateur.";
+        if (empty($identifier)) {
+            $errors[] = "Veuillez entrer un nom d'utilisateur ou une adresse e-mail.";
         }
 
         $conn = $this->db->getConnection();
@@ -144,14 +144,14 @@ class GroupController {
             return;
         }
 
-        // Find the student by username
-        $stmt = $conn->prepare("SELECT user_id FROM users WHERE username = ? AND user_type = 'student'");
-        $stmt->bind_param("s", $username);
+        // Find the student by username or email
+        $stmt = $conn->prepare("SELECT user_id FROM users WHERE (username = ? OR email = ?) AND user_type = 'student'");
+        $stmt->bind_param("ss", $identifier, $identifier);
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($result->num_rows === 0) {
-            $errors[] = "Aucun étudiant trouvé avec ce nom d'utilisateur.";
+            $errors[] = "Aucun étudiant trouvé avec ce nom d'utilisateur ou cette adresse e-mail.";
             $stmt->close();
             $this->manageGroup($groupId, $errors);
             return;

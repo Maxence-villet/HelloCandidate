@@ -35,8 +35,9 @@
                 <form action="/group/add" method="POST">
                     <input type="hidden" name="group_id" value="<?php echo $groupId; ?>">
                     <div class="mb-4">
-                        <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Nom d'utilisateur de l'étudiant</label>
-                        <input type="text" name="username" id="username" required
+                        <label for="identifier" class="block text-sm font-medium text-gray-700 mb-1">Nom d'utilisateur ou adresse e-mail de l'étudiant</label>
+                        <input type="text" name="identifier" id="identifier" required
+                            placeholder="ex: etudiant123 ou etudiant@example.com"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     <button type="submit" 
