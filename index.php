@@ -24,7 +24,6 @@ switch ($request) {
         $controller = new ApplicationController();
         $controller->listApplications();
         break;
-        
     case '/applications/add':
         require __DIR__ . '/controllers/ApplicationController.php';
         $controller = new ApplicationController();
@@ -34,19 +33,16 @@ switch ($request) {
             $controller->showApplicationForm();
         }
         break;
-
     case '/rankings':
         require __DIR__ . '/controllers/RankingController.php';
         $controller = new RankingController();
         $controller->showRanking();
         break;
-
     case '/notifications':
         require __DIR__ . '/controllers/NotificationsController.php';
         $controller = new NotificationsController();
         $controller->listNotifications();
         break;
-    
     case '/logout':
         require __DIR__ . '/controllers/AuthController.php';
         $controller = new AuthController();
@@ -58,7 +54,7 @@ switch ($request) {
     case '/spectator/dashboard':
         $_SESSION['manage_group_id'] = null;
         require __DIR__ . '/routes/spectator/dashboard.php';
-        break; 
+        break;
     case '/group/create':
         require __DIR__ . '/routes/group/create.php';
         break;
@@ -76,7 +72,16 @@ switch ($request) {
         break;
     case '/profile':
         require __DIR__ . '/routes/profile/profile.php';
-    break;
+        break;
+    case '/help':
+        // Placeholder for the Help page
+        session_start();
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: /login');
+            exit;
+        }
+        echo "Page d'aide - À implémenter.";
+        break;
     default:
         http_response_code(404);
         echo "Page non trouvée";
