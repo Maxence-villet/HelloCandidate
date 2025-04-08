@@ -1,4 +1,3 @@
-<?php session_start(); ?>
 <?php include __DIR__ . '/layout.php'; ?>
 <div class="bg-gray-50">
     <!-- Hero Section -->
@@ -112,6 +111,73 @@
             </a>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Column 1: About HelloCandidate -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">À propos de HelloCandidate</h3>
+                    <p class="text-gray-400">
+                        HelloCandidate est une plateforme gamifiée qui aide les étudiants à trouver une alternance tout en les motivant grâce à un système de rangs unique.
+                    </p>
+                </div>
+
+                <!-- Column 2: Quick Links -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Liens rapides</h3>
+                    <ul class="space-y-2">
+                        <li>
+                            <a href="/" class="text-gray-400 hover:text-white transition-colors duration-200">Accueil</a>
+                        </li>
+                        <li>
+                            <a href="/help" class="text-gray-400 hover:text-white transition-colors duration-200">Aide</a>
+                        </li>
+                        <li>
+                            <a href="/register" class="text-gray-400 hover:text-white transition-colors duration-200">Inscription</a>
+                        </li>
+                        <li>
+                            <a href="/login" class="text-gray-400 hover:text-white transition-colors duration-200">Connexion</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: Contact Information -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contactez-nous</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <svg class="w-5 h-5 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                            <span class="text-gray-400">maxence.villetschoumaker@gmail.com</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Column 4: Social Media Links -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Suivez-nous</h3>
+                    <div class="flex space-x-4">
+                        <a href="https://www.linkedin.com/in/maxence-villet-schoumaker-developpeur-web-mobile/" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-colors duration-200">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"></path>
+                                <circle cx="4" cy="4" r="2" stroke="none" fill="currentColor"></circle>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Copyright Notice -->
+            <div class="mt-8 pt-8 border-t border-gray-700 text-center">
+                <p class="text-gray-400 text-sm">
+                    &copy; <?php echo date('Y'); ?> HelloCandidate. Tous droits réservés.
+                </p>
+            </div>
+        </div>
+    </footer>
 </div>
 </body>
 </html>

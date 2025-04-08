@@ -13,10 +13,6 @@ class HelpController {
 
     public function showHelpPage() {
         // Redirect if not logged in
-        if (!isset($_SESSION['user_id'])) {
-            header('Location: /login');
-            exit;
-        }
 
         // Fetch all ranks (without sub-ranks, just the main rank names)
         $conn = $this->db->getConnection();

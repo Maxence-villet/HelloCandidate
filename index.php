@@ -79,10 +79,6 @@ switch ($request) {
     case '/help':
         // Placeholder for the Help page
         session_start();
-        if (!isset($_SESSION['user_id'])) {
-            header('Location: /login');
-            exit;
-        }
         require __DIR__ . '/routes/help.php';
         break;
     default:
