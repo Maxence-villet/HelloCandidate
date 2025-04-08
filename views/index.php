@@ -97,6 +97,67 @@
         </div>
     </div>
 
+    <!-- FAQ Section -->
+    <div class="py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">
+                Foire aux questions (FAQ)
+            </h2>
+            <div class="bg-white rounded-lg shadow-lg p-8 max-w-3xl mx-auto">
+                <?php
+                $faqs = [
+                    [
+                        'question' => 'Comment fonctionne le système de rangs ?',
+                        'answer' => 'Il y a 10 rangs à conquérir : Fer, Bronze, Argent, Or, Platine, Émeraude, Diamant, Maître, Grand Maître, et Challenger. Chaque rang est divisé en 3 sous-rangs (par exemple, Fer 3, Fer 2, Fer 1). Pour passer d’un rang à un autre (ex. : Bronze 1 à Argent 3), vous devez compléter les 3 sous-rangs du rang actuel en envoyant des candidatures.'
+                    ],
+                    [
+                        'question' => 'Que se passe-t-il si je n\'envoie pas de candidatures ?',
+                        'answer' => 'Si vous n\'envoyez pas de candidatures régulièrement, vous risquez de stagner dans votre rang actuel. De plus, un système de déclassement hebdomadaire peut réduire votre progression si vous êtes inactif trop longtemps. Restez actif pour continuer à grimper dans les rangs !'
+                    ],
+                    [
+                        'question' => 'Comment puis-je commencer à utiliser HelloCandidate ?',
+                        'answer' => 'C\'est simple ! Inscrivez-vous sur la plateforme en cliquant sur "Inscription", puis ajoutez votre première candidature via l\'option "Ajouter une candidature". Vous commencerez immédiatement à progresser dans les rangs.'
+                    ],
+                    [
+                        'question' => 'Puis-je comparer mes progrès avec d\'autres utilisateurs ?',
+                        'answer' => 'Oui ! Vous pouvez consulter le classement global pour voir votre position par rapport aux autres utilisateurs et viser le top 100. C\'est une excellente façon de rester motivé !'
+                    ]
+                ];
+                ?>
+
+                <?php foreach ($faqs as $index => $faq): ?>
+                    <!-- FAQ Item -->
+                    <div class="faq-item mb-4" data-index="<?php echo $index; ?>">
+                        <button
+                            class="faq-question w-full text-left text-lg font-semibold text-blue-600 hover:text-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md py-2 px-4 flex justify-between items-center"
+                            aria-expanded="false"
+                            aria-controls="faq-answer-<?php echo $index; ?>"
+                            tabindex="0"
+                        >
+                            <span><?php echo htmlspecialchars($faq['question']); ?></span>
+                            <svg class="w-5 h-5 transform transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div
+                            id="faq-answer-<?php echo $index; ?>"
+                            class="faq-answer overflow-hidden max-h-0 transition-all duration-500 ease-in-out"
+                        >
+                            <p class="text-gray-600 mt-2 px-4 pb-4">
+                                <?php echo htmlspecialchars($faq['answer']); ?>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Divider (except after the last FAQ) -->
+                    <?php if ($index < count($faqs) - 1): ?>
+                        <hr class="border-t border-gray-200 my-4" aria-hidden="true">
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+
     <!-- Call to Action Section -->
     <div class="bg-blue-600 text-white py-16">
         <div class="container mx-auto px-4 text-center">
@@ -173,11 +234,69 @@
             <!-- Copyright Notice -->
             <div class="mt-8 pt-8 border-t border-gray-700 text-center">
                 <p class="text-gray-400 text-sm">
-                    &copy; <?php echo date('Y'); ?> HelloCandidate. Tous droits réservés.
+                    © <?php echo date('Y'); ?> HelloCandidate. Tous droits réservés.
                 </p>
             </div>
         </div>
     </footer>
 </div>
+
+<!-- Custom CSS for FAQ Animation -->
+<style>
+    .faq-answer {
+        transition: max-height 0.5s ease-in-out;
+    }
+
+    .faq-item.is-open .faq-answer {
+        max-height: 500px; /* Adjust this value based on your content height */
+    }
+
+    .faq-item.is-open .faq-question svg {
+        transform: rotate(180deg);
+    }
+</style>
+
+<!-- JavaScript for FAQ Accordion -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const faqItems = document.querySelectorAll('.faq-item');
+
+        faqItems.forEach(item => {
+            const button = item.querySelector('.faq-question');
+            const answer = item.querySelector('.faq-answer');
+
+            // Set initial max-height for closed state
+            answer.style.maxHeight = '0px';
+
+            button.addEventListener('click', () => {
+                const isOpen = item.classList.contains('is-open');
+                const answerId = button.getAttribute('aria-controls');
+
+                // Toggle the is-open class
+                item.classList.toggle('is-open');
+
+                // Update aria-expanded
+                button.setAttribute('aria-expanded', !isOpen);
+
+                // Set max-height for animation
+                if (!isOpen) {
+                    // When opening, set max-height to the scrollHeight of the content
+                    answer.style.maxHeight = `${answer.scrollHeight}px`;
+                } else {
+                    // When closing, set max-height back to 0
+                    answer.style.maxHeight = '0px';
+                }
+            });
+
+            // Add keyboard support (Enter and Space keys)
+            button.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    button.click();
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>

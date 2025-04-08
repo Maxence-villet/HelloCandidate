@@ -38,7 +38,7 @@ class ApplicationController {
         // Gestion du fichier de lettre de motivation
         $coverLetterPath = null;
         if (isset($_FILES['cover_letter']) && $_FILES['cover_letter']['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = __DIR__ . '/../uploads/cover_letters/';
+            $uploadDir = __DIR__ . '/../public/uploads/cover_letters/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
