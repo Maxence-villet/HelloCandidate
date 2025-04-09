@@ -56,13 +56,31 @@ class AuthController {
             return;
         }
 
+        // Récupérer l'ID du rang "Fer 3"
+        $stmt = $conn->prepare("SELECT rank_id FROM ranks WHERE rank_name = ? AND sub_rank = ?");
+        $rankName = 'Fer';
+        $subRank = 3;
+        $stmt->bind_param("si", $rankName, $subRank);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows === 0) {
+            $errors[] = "Erreur : Le rang Fer 3 n'existe pas dans la base de données.";
+            include __DIR__ . '/../views/register.php';
+            $stmt->close();
+            return;
+        }
+        $rankId = $result->fetch_assoc()['rank_id'];
+        $stmt->close();
+
         $passwordHash = password_hash($password, PASSWORD_BCRYPT);
         $userType = 'student';
-        $stmt = $conn->prepare("INSERT INTO users (username, email, password_hash, user_type) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("ssss", $username, $email, $passwordHash, $userType);
+
+        // Ajouter rank_id dans l'insertion
+        $stmt = $conn->prepare("INSERT INTO users (username, email, password_hash, user_type, rank_id) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssi", $username, $email, $passwordHash, $userType, $rankId);
 
         if ($stmt->execute()) {
-            header('Location: /login?success=Inscription réussie ! Veuillez vous connecter.');
+            header('Location: /login');
         } else {
             $errors[] = "Une erreur s'est produite lors de l'inscription. Veuillez réessayer.";
             include __DIR__ . '/../views/register.php';
@@ -70,6 +88,7 @@ class AuthController {
         $stmt->close();
     }
 
+    // Les autres méthodes (showLoginForm, login, logout, etc.) restent inchangées
     public function showLoginForm() {
         if (isset($_SESSION['user_id'])) {
             header('Location: /welcome');
@@ -126,17 +145,13 @@ class AuthController {
         $_SESSION['username'] = $user['username'];
         $_SESSION['user_type'] = $user['user_type'];
 
-        // Rediriger vers la page de bienvenue
         header('Location: /welcome');
         exit;
     }
 
     public function logout() {
-        // Détruire la session
         session_unset();
         session_destroy();
-        
-        // Rediriger vers la page de connexion
         header('Location: /login');
         exit;
     }
@@ -182,12 +197,12 @@ class AuthController {
         $stmt->close();
 
         if (!empty($errors)) {
-            include __DIR__ . '/../views/spectator_register.php';
+            include __DIR__ . '/../views/spectator/register.php';
             return;
         }
 
         $passwordHash = password_hash($password, PASSWORD_BCRYPT);
-        $userType = 'spectator'; // Set user type to spectator
+        $userType = 'spectator';
         $stmt = $conn->prepare("INSERT INTO users (username, email, password_hash, user_type) VALUES (?, ?, ?, ?)");
         $stmt->bind_param("ssss", $username, $email, $passwordHash, $userType);
 
@@ -195,7 +210,7 @@ class AuthController {
             header('Location: /login');
         } else {
             $errors[] = "Une erreur s'est produite lors de l'inscription. Veuillez réessayer.";
-            include __DIR__ . '/../views/spectator_register.php';
+            include __DIR__ . '/../views/spectator/register.php';
         }
         $stmt->close();
     }
