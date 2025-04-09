@@ -1,44 +1,7 @@
 <?php
-session_start();
-
-if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'spectator') {
-    header('Location: /spectator/dashboard');
-    exit;
-}
-
-if (!isset($_SESSION['user_id'])) {
-    header('Location: /login');
-    exit;
-}
-
-$username = htmlspecialchars($_SESSION['username']);
+$page_title = 'Ajouter une Candidature';
+include __DIR__ . '/../../utils/header.php';
 ?>
-
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HelloCandidate - Ajouter une Candidature</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50">
-    <!-- Top Bar -->
-    <header class="bg-white shadow-sm p-4 flex justify-between items-center">
-        <div class="flex items-center">
-            <h1 class="text-2xl font-bold text-blue-600">HelloCandidate</h1>
-        </div>
-        <div class="flex items-center space-x-4">
-            <input type="text" placeholder="Search..." class="border rounded-lg px-3 py-1">
-            <div class="flex items-center space-x-2">
-                <span class="text-gray-700"><?php echo $username; ?></span>
-            </div>
-        </div>
-    </header>
-
-    <div class="flex min-h-screen">
-        <!-- Include the Sidebar -->
-        <?php include __DIR__ . '/../../utils/sidebar.php'; ?>
 
         <!-- Main Content -->
         <main class="flex-1 p-8">

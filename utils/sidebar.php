@@ -8,11 +8,11 @@ if (session_status() === PHP_SESSION_NONE) {
 $username = isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'Guest';
 ?>
 
-<aside class="w-64 bg-white shadow-lg p-4">
+<aside class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg p-4 transform md:transform-none transition-transform duration-300 z-20">
     <div class="flex items-center space-x-3 mb-6">
         <div>
             <h2 class="text-lg font-semibold text-gray-800"><?php echo $username; ?></h2>
-            <p class="text-sm text-gray-500">Project Manager</p>
+            <p class="text-sm text-gray-500"><?php echo $_SESSION["user_type"]; ?></p>
         </div>
     </div>
     <nav>
