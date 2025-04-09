@@ -1,18 +1,18 @@
 <?php 
     
-    session_start();
+session_start();
 
-    if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'spectator') {
-        header('Location: /spectator/dashboard');
-        exit;
-    }
+if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'spectator') {
+    header('Location: /spectator/dashboard');
+    exit;
+}
 
-    if (!isset($_SESSION['user_id'])) {
-        header('Location: /login');
-        exit;
-    }
+if (!isset($_SESSION['user_id'])) {
+    header('Location: /login');
+    exit;
+}
 
-    include __DIR__ . '/../../utils/header.php'; 
+include __DIR__ . '/../../utils/header.php'; 
     
 ?>
     <?php if (isset($_SESSION['rank_up_message'])): ?>
@@ -210,6 +210,27 @@
                 </table>
             <?php endif; ?>
         </div>
+
+        <!-- Balises audio pour les effets sonores -->
+        <audio id="applicationSound" src="/public/sfx/application.mp3" preload="auto"></audio>
+        <audio id="levelUpSound" src="/public/sfx/level-up.mp3" preload="auto"></audio>
+
+        <!-- Script pour jouer les sons -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Vérifier si un son d'ajout de candidature doit être joué
+                <?php if (isset($_SESSION['play_application_sound']) && $_SESSION['play_application_sound']): ?>
+                    document.getElementById('applicationSound').play();
+                    <?php unset($_SESSION['play_application_sound']); ?>
+                <?php endif; ?>
+
+                // Vérifier si un son de montée de rang doit être joué
+                <?php if (isset($_SESSION['play_level_up_sound']) && $_SESSION['play_level_up_sound']): ?>
+                    document.getElementById('levelUpSound').play();
+                    <?php unset($_SESSION['play_level_up_sound']); ?>
+                <?php endif; ?>
+            });
+        </script>
     </div>
 </body>
 </html>

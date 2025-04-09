@@ -12,6 +12,9 @@ class ApplicationController {
         }
     }
 
+    /**
+     * Affiche le formulaire d'ajout de candidature
+     */
     public function showApplicationForm() {
         if (!isset($_SESSION['user_id'])) {
             header('Location: /login');
@@ -20,6 +23,9 @@ class ApplicationController {
         include __DIR__ . '/../views/applications/add.php';
     }
 
+    /**
+     * Ajoute une nouvelle candidature
+     */
     public function addApplication() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['user_id'])) {
             header('Location: /login');
@@ -72,6 +78,8 @@ class ApplicationController {
             
             // Stocker le message de succès dans la session
             $_SESSION['success_message'] = 'Candidature ajoutée avec succès';
+            // Indiquer qu'un son doit être joué pour l'ajout de candidature
+            $_SESSION['play_application_sound'] = true;
             header('Location: /applications');
         } else {
             $errors[] = "Erreur lors de l'ajout de la candidature";
@@ -80,11 +88,17 @@ class ApplicationController {
         $stmt->close();
     }
 
+    /**
+     * Met à jour le compteur de candidatures de l'utilisateur
+     */
     private function updateApplicationCount($userId) {
         $conn = $this->db->getConnection();
         $conn->query("UPDATE users SET candidature_count = candidature_count + 1 WHERE user_id = $userId");
     }
 
+    /**
+     * Ajoute une notification pour l'utilisateur
+     */
     private function addNotification($userId, $message) {
         $conn = $this->db->getConnection();
         $stmt = $conn->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
@@ -93,6 +107,9 @@ class ApplicationController {
         $stmt->close();
     }
 
+    /**
+     * Vérifie si l'utilisateur a monté de rang ou sous-rang
+     */
     private function checkRankProgression($userId) {
         $conn = $this->db->getConnection();
 
@@ -129,9 +146,14 @@ class ApplicationController {
             $message = "Félicitations ! Vous êtes passé à " . $newRank['rank_name'] . " " . $newRank['sub_rank'] . " !";
             $this->addNotification($userId, $message);
             $_SESSION['rank_up_message'] = $message; // Stocker le message pour l'afficher
+            // Indiquer qu'un son doit être joué pour la montée de rang
+            $_SESSION['play_level_up_sound'] = true;
         }
     }
 
+    /**
+     * Liste toutes les candidatures de l'utilisateur avec filtres
+     */
     public function listApplications() {
         if (!isset($_SESSION['user_id'])) {
             header('Location: /login');
@@ -197,5 +219,32 @@ class ApplicationController {
         $stmt->close();
     
         include __DIR__ . '/../views/applications/list.php';
+    }
+
+    /**
+     * Affiche les détails d'une candidature spécifique
+     */
+    public function viewApplication($applicationId) {
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: /login');
+            exit;
+        }
+
+        $userId = $_SESSION['user_id'];
+        $conn = $this->db->getConnection();
+        $stmt = $conn->prepare("SELECT * FROM applications WHERE application_id = ? AND user_id = ?");
+        $stmt->bind_param("ii", $applicationId, $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $application = $result->fetch_assoc();
+        $stmt->close();
+
+        if (!$application) {
+            $_SESSION['error_message'] = "Candidature non trouvée ou accès non autorisé.";
+            header('Location: /applications');
+            exit;
+        }
+
+        include __DIR__ . '/../views/applications/view.php';
     }
 }
