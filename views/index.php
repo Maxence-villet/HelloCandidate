@@ -1,3 +1,4 @@
+<?php session_start(); ?>
 <?php include __DIR__ . '/layout.php'; ?>
 <div class="bg-gray-50">
     <!-- Hero Section -->
