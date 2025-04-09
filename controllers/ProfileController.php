@@ -11,11 +11,9 @@ class ProfileController {
         }
     }
 
-    // Show the profile page (view or edit)
     public function showProfile($userId = null) {
         $conn = $this->db->getConnection();
 
-        // If no userId is provided, show the logged-in user's profile
         if ($userId === null) {
             if (!isset($_SESSION['user_id'])) {
                 header('Location: /login');
@@ -27,7 +25,6 @@ class ProfileController {
             $isOwnProfile = (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $userId);
         }
 
-        // Fetch user details
         $stmt = $conn->prepare("
             SELECT u.user_id, u.username, u.bio, u.candidature_count, r.rank_name, r.sub_rank, r.min_applications
             FROM users u
@@ -44,12 +41,10 @@ class ProfileController {
         $user = $result->fetch_assoc();
         $stmt->close();
 
-        // Calculate progress to next rank
         $currentRankMin = $user['min_applications'];
         $nextRankMin = $this->getNextRankMinApplications($conn, $user['rank_name'], $user['sub_rank']);
         $progress = $nextRankMin ? round(($user['candidature_count'] - $currentRankMin) / ($nextRankMin - $currentRankMin) * 100) : 100;
 
-        // Fetch user's badges
         $stmt = $conn->prepare("
             SELECT b.badge_name, b.description
             FROM user_badges ub
@@ -61,10 +56,12 @@ class ProfileController {
         $badges = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
 
+        // Récupérer les données d'activité sur 6 mois
+        $activityData = $this->getActivityData($conn, $userId);
+
         include __DIR__ . '/../views/profile/profile.php';
     }
 
-    // Update the user's bio
     public function updateBio() {
         if (!isset($_SESSION['user_id'])) {
             header('Location: /login');
@@ -101,23 +98,74 @@ class ProfileController {
         $this->showProfile($_SESSION['user_id']);
     }
 
-    // Helper method to get the min_applications for the next rank
     private function getNextRankMinApplications($conn, $currentRankName, $currentSubRank) {
         $stmt = $conn->prepare("
             SELECT min_applications
             FROM ranks
-            WHERE (rank_name = ? AND sub_rank < ?) OR (rank_name > ?)
-            ORDER BY rank_name ASC, sub_rank DESC
+            WHERE (rank_name = ? AND sub_rank < ?) OR rank_id > (SELECT rank_id FROM ranks WHERE rank_name = ? AND sub_rank = ?)
+            ORDER BY rank_id ASC
             LIMIT 1
         ");
-        $stmt->bind_param("sis", $currentRankName, $currentSubRank, $currentRankName);
+        $stmt->bind_param("siss", $currentRankName, $currentSubRank, $currentRankName, $currentSubRank);
         $stmt->execute();
         $result = $stmt->get_result();
         if ($result->num_rows === 0) {
-            return null; // No next rank (user is at the highest rank)
+            return null;
         }
         $nextRank = $result->fetch_assoc();
         $stmt->close();
         return $nextRank['min_applications'];
+    }
+
+    private function getActivityData($conn, $userId) {
+        // Modifier pour 6 mois au lieu de 3 mois
+        $sixMonthsAgo = date('Y-m-d', strtotime('-6 months'));
+        // Utiliser CURRENT_DATE pour inclure aujourd'hui
+        $stmt = $conn->prepare("
+            SELECT DATE(submission_date) as date, COUNT(*) as count
+            FROM applications
+            WHERE user_id = ? AND submission_date >= ? AND submission_date <= CURRENT_DATE
+            GROUP BY DATE(submission_date)
+            ORDER BY submission_date ASC
+        ");
+        $stmt->bind_param("is", $userId, $sixMonthsAgo);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $activity = [];
+        while ($row = $result->fetch_assoc()) {
+            $activity[$row['date']] = $row['count'];
+        }
+        $stmt->close();
+
+        // Générer un tableau pour les 6 derniers mois
+        $startDate = new DateTime($sixMonthsAgo);
+        $endDate = new DateTime(); // Inclut aujourd'hui
+        $interval = new DateInterval('P1D');
+        $dateRange = new DatePeriod($startDate, $interval, $endDate->modify('+1 day')); // Ajouter un jour pour inclure aujourd'hui
+
+        $activityData = [];
+        $maxCount = max(array_values($activity) + [1]); // Éviter division par 0
+        foreach ($dateRange as $date) {
+            $dateStr = $date->format('Y-m-d');
+            $count = isset($activity[$dateStr]) ? $activity[$dateStr] : 0;
+            // Ajuster le calcul de l'intensité pour mieux refléter les grandes valeurs
+            $intensity = 0;
+            if ($count > 0) {
+                if ($count >= 10) {
+                    $intensity = 4; // 10 candidatures ou plus -> intensité maximale
+                } elseif ($count >= 7) {
+                    $intensity = 3;
+                } elseif ($count >= 4) {
+                    $intensity = 2;
+                } else {
+                    $intensity = 1;
+                }
+            }
+            $activityData[$dateStr] = [
+                'count' => $count,
+                'intensity' => $intensity
+            ];
+        }
+        return $activityData;
     }
 }
