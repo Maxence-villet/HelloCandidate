@@ -45,6 +45,39 @@
                                 <p class="text-sm text-gray-500">
                                     <?php echo date('d/m/Y à H:i', strtotime($notification['created_at'])); ?>
                                 </p>
+                                <?php 
+                                    // Vérifier si le message est une invitation (simplifié sans regex)
+                                    $message = $notification['message'];
+                                    if (strpos($message, "Vous avez été invité à rejoindre le groupe") !== false) {
+                                        // Extraire l'ID du groupe (supposons que le message contient "group_id:X" à la fin)
+                                        $groupId = 0;
+                                        $parts = explode("group_id:", $message);
+                                        if (count($parts) > 1) {
+                                            $groupId = (int)$parts[1];
+                                        }
+                                        if ($groupId > 0):
+                                ?>
+                                    <div class="mt-2 flex space-x-4">
+                                        <!-- Formulaire pour accepter -->
+                                        <form action="/notifications/handle" method="POST">
+                                            <input type="hidden" name="notification_id" value="<?php echo $notification['notification_id']; ?>">
+                                            <input type="hidden" name="action" value="accept">
+                                            <input type="hidden" name="group_id" value="<?php echo $groupId; ?>">
+                                            <button type="submit" class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700">
+                                                Accepter
+                                            </button>
+                                        </form>
+                                        <!-- Formulaire pour refuser -->
+                                        <form action="/notifications/handle" method="POST">
+                                            <input type="hidden" name="notification_id" value="<?php echo $notification['notification_id']; ?>">
+                                            <input type="hidden" name="action" value="refuse">
+                                            <input type="hidden" name="group_id" value="<?php echo $groupId; ?>">
+                                            <button type="submit" class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700">
+                                                Refuser
+                                            </button>
+                                        </form>
+                                    </div>
+                                <?php endif; } ?>
                             </div>
                         </li>
                     <?php endforeach; ?>

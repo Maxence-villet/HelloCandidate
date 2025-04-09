@@ -46,6 +46,11 @@ switch ($request) {
         $controller = new NotificationsController();
         $controller->listNotifications();
         break;
+    case '/notifications/handle':
+        require __DIR__ . '/controllers/NotificationsController.php';
+        $controller = new NotificationsController();
+        $controller->handleInvitation();
+        break;
     case '/logout':
         require __DIR__ . '/controllers/AuthController.php';
         $controller = new AuthController();
@@ -77,7 +82,6 @@ switch ($request) {
         require __DIR__ . '/routes/profile/profile.php';
         break;
     case '/help':
-        // Placeholder for the Help page
         session_start();
         require __DIR__ . '/routes/help.php';
         break;

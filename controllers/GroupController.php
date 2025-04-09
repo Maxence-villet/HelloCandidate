@@ -11,7 +11,6 @@ class GroupController {
         }
     }
 
-    // Restrict access to spectators only
     private function restrictToSpectators() {
         if (!isset($_SESSION['user_id'])) {
             header('Location: /login');
@@ -23,13 +22,11 @@ class GroupController {
         }
     }
 
-    // Show the form to create a group
     public function showCreateGroupForm() {
         $this->restrictToSpectators();
         include __DIR__ . '/../views/group/create.php';
     }
 
-    // Create a new group
     public function createGroup() {
         $this->restrictToSpectators();
 
@@ -65,13 +62,11 @@ class GroupController {
         $stmt->close();
     }
 
-    // Show the group management page
     public function manageGroup($groupId, $errors = [], $success = null, $error = null) {
         $this->restrictToSpectators();
 
         $conn = $this->db->getConnection();
 
-        // Verify the group exists and was created by the current user
         $stmt = $conn->prepare("SELECT group_name FROM groups WHERE group_id = ? AND created_by = ?");
         $stmt->bind_param("ii", $groupId, $_SESSION['user_id']);
         $stmt->execute();
@@ -79,14 +74,12 @@ class GroupController {
 
         if ($result->num_rows === 0) {
             $errors[] = "Groupe non trouvé ou accès non autorisé.";
-            // Since we don't want to redirect to /spectator/dashboard, we'll render the view with the error
             $groupName = "Groupe inconnu";
             $members = [];
         } else {
             $group = $result->fetch_assoc();
             $groupName = $group['group_name'];
 
-            // Fetch group members with their rank and candidature count
             $stmt = $conn->prepare("
                 SELECT u.user_id, u.username, u.candidature_count, r.rank_name, r.sub_rank
                 FROM group_members gm
@@ -103,7 +96,6 @@ class GroupController {
         include __DIR__ . '/../views/group/manage.php';
     }
 
-    // Add a student to the group
     public function addStudentToGroup($groupId) {
         $this->restrictToSpectators();
 
@@ -113,7 +105,8 @@ class GroupController {
             return;
         }
 
-        $identifier = trim($_POST['identifier'] ?? ''); // Changed from 'username' to 'identifier'
+        $identifier = trim($_POST['identifier'] ?? '');
+        $literal = false;
         $errors = [];
 
         if (empty($identifier)) {
@@ -122,7 +115,6 @@ class GroupController {
 
         $conn = $this->db->getConnection();
 
-        // Verify the group exists and was created by the current user
         $stmt = $conn->prepare("SELECT group_name FROM groups WHERE group_id = ? AND created_by = ?");
         $stmt->bind_param("ii", $groupId, $_SESSION['user_id']);
         $stmt->execute();
@@ -144,7 +136,6 @@ class GroupController {
             return;
         }
 
-        // Find the student by username or email
         $stmt = $conn->prepare("SELECT user_id FROM users WHERE (username = ? OR email = ?) AND user_type = 'student'");
         $stmt->bind_param("ss", $identifier, $identifier);
         $stmt->execute();
@@ -161,7 +152,6 @@ class GroupController {
         $studentId = $student['user_id'];
         $stmt->close();
 
-        // Check if the student is already in the group
         $stmt = $conn->prepare("SELECT COUNT(*) FROM group_members WHERE group_id = ? AND user_id = ?");
         $stmt->bind_param("ii", $groupId, $studentId);
         $stmt->execute();
@@ -175,27 +165,18 @@ class GroupController {
         }
         $stmt->close();
 
-        // Add the student to the group
-        $stmt = $conn->prepare("INSERT INTO group_members (group_id, user_id) VALUES (?, ?)");
-        $stmt->bind_param("ii", $groupId, $studentId);
+        // Au lieu d'ajouter directement, envoyer une invitation
+        $this->sendInvitation($groupId, $studentId, $groupName);
 
-        if ($stmt->execute()) {
-            $success = "Étudiant ajouté avec succès !";
-            $this->manageGroup($groupId, [], $success);
-        } else {
-            $errors[] = "Une erreur s'est produite lors de l'ajout de l'étudiant. Veuillez réessayer.";
-            $this->manageGroup($groupId, $errors);
-        }
-        $stmt->close();
+        $success = "Invitation envoyée avec succès !";
+        $this->manageGroup($groupId, [], $success);
     }
 
-    // Remove a student from the group
     public function removeStudentFromGroup($groupId, $studentId) {
         $this->restrictToSpectators();
 
         $conn = $this->db->getConnection();
 
-        // Verify the group exists and was created by the current user
         $stmt = $conn->prepare("SELECT group_name FROM groups WHERE group_id = ? AND created_by = ?");
         $stmt->bind_param("ii", $groupId, $_SESSION['user_id']);
         $stmt->execute();
@@ -209,7 +190,6 @@ class GroupController {
         }
         $stmt->close();
 
-        // Remove the student from the group
         $stmt = $conn->prepare("DELETE FROM group_members WHERE group_id = ? AND user_id = ?");
         $stmt->bind_param("ii", $groupId, $studentId);
 
@@ -228,7 +208,6 @@ class GroupController {
 
         $conn = $this->db->getConnection();
 
-        // Verify that the user is a student and is in one of the spectator's groups
         $stmt = $conn->prepare("
             SELECT u.user_id
             FROM users u
@@ -246,7 +225,6 @@ class GroupController {
         }
         $stmt->close();
 
-        // Fetch the student's applications (anonymized: only company_name, position, status)
         $stmt = $conn->prepare("
             SELECT company_name, position, status
             FROM applications
@@ -258,11 +236,9 @@ class GroupController {
         $applications = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
 
-        // Calculate application statistics for the last 4 weeks (28 days)
         $endDate = date('Y-m-d');
-        $startDate = date('Y-m-d', strtotime('-27 days')); // 28 days total (4 weeks)
+        $startDate = date('Y-m-d', strtotime('-27 days'));
 
-        // Fetch daily application counts (most recent to oldest)
         $stmt = $conn->prepare("
             SELECT DATE(submission_date) as submission_day, COUNT(*) as application_count
             FROM applications
@@ -279,12 +255,10 @@ class GroupController {
         }
         $stmt->close();
 
-        // Calculate average applications per day
         $totalApplications = array_sum($dailyCounts);
         $daysWithApplications = count($dailyCounts);
         $averagePerDay = $daysWithApplications > 0 ? round($totalApplications / 28, 2) : 0;
 
-        // Build the daily stats array for the last 28 days (most recent to oldest)
         $dailyStats = [];
         for ($i = 0; $i < 28; $i++) {
             $date = date('Y-m-d', strtotime("$endDate - $i days"));
@@ -295,5 +269,16 @@ class GroupController {
         }
 
         include __DIR__ . '/../views/profile/stats.php';
+    }
+
+    public function sendInvitation($groupId, $studentId, $groupName) {
+        $this->restrictToSpectators();
+
+        $conn = $this->db->getConnection();
+        $message = "Vous avez été invité à rejoindre le groupe '$groupName' (group_id:$groupId)";
+        $stmt = $conn->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
+        $stmt->bind_param("is", $studentId, $message);
+        $stmt->execute();
+        $stmt->close();
     }
 }
