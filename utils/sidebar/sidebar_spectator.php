@@ -26,22 +26,6 @@ $username = isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username'
                 </a>
             </li>
             <li>
-                <a href="/group/manage" class="flex items-center space-x-2 text-blue-600 hover:bg-blue-50 p-2 rounded <?php echo ($current_page === 'group_manage') ? 'bg-blue-50' : ''; ?>">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                    </svg>
-                    <span>Groupes</span>
-                </a>
-            </li>
-            <li>
-                <a href="/notifications" class="flex items-center space-x-2 text-blue-600 hover:bg-blue-50 p-2 rounded <?php echo ($current_page === 'notifications') ? 'bg-blue-50' : ''; ?>">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
-                    </svg>
-                    <span>Notifications</span>
-                </a>
-            </li>
-            <li>
                 <a href="/rankings" class="flex items-center space-x-2 text-blue-600 hover:bg-blue-50 p-2 rounded <?php echo ($current_page === 'rankings') ? 'bg-blue-50' : ''; ?>">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11l7-7 7 7M5 19l7-7 7 7"></path>
