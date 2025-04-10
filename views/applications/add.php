@@ -1,6 +1,6 @@
 <?php
 $page_title = 'Ajouter une Candidature';
-include __DIR__ . '/../../utils/header.php';
+include __DIR__ . '/../../utils/header/header_student.php';
 ?>
 
         <!-- Main Content -->

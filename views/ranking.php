@@ -5,7 +5,7 @@ session_start();
 if($_SESSION["user_type"] == "spectator") {
     include __DIR__ . '/../utils/header/header_spectator.php';
 } else {
-    include __DIR__ . '/../utils/header.php';
+    include __DIR__ . '/../utils/header/header_student.php';
 }
 
 ?> 
