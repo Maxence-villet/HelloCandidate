@@ -1,7 +1,7 @@
 <?php
-require_once __DIR__ . '/../utils/database.php';
+require_once __DIR__ . '/../../utils/database.php';
 
-class WelcomeController {
+class DashboardController {
     private $db;
     private $conn;
     private $user_id;
@@ -234,7 +234,7 @@ class WelcomeController {
         return $data;
     }
 
-    public function showWelcomePage() {
+    public function showDashboardPage() {
         // Fetch the data
         $data = $this->getDashboardData();
 
@@ -254,7 +254,7 @@ class WelcomeController {
         $source_counts = $data['source_counts'];
 
         // Include the view
-        require_once __DIR__ . '/../views/welcome.php';
+        require_once __DIR__ . '/../../views/student/dashboard.php';
     }
 
     public function __destruct() {

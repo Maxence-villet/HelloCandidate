@@ -1,7 +1,7 @@
 <?php
 $page_title = 'Dashboard';
 $current_page = 'dashboard'; // For sidebar navigation highlighting
-include __DIR__ . '/../utils/header.php';
+include __DIR__ . '/../../utils/header/header_student.php';
 ?>
 
 <!-- Main Content -->

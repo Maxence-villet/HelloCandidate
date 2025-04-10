@@ -10,7 +10,7 @@ $username = $isLoggedIn ? htmlspecialchars($_SESSION['username']) : 'Guest';
 $userType = $isLoggedIn ? $_SESSION['user_type'] : null;
 
 // Determine the dashboard URL based on user type
-$dashboardUrl = ($userType === 'spectator') ? '/spectator/dashboard' : '/dashboard';
+$dashboardUrl = ($userType === 'spectator') ? '/spectator/dashboard' : '/student/dashboard';
 ?>
 
 <!DOCTYPE html>

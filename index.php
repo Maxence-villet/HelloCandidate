@@ -11,8 +11,8 @@ switch ($request) {
     case '/login':
         require __DIR__ . '/routes/login.php';
         break;
-    case '/welcome':
-        require __DIR__ . '/routes/welcome.php';
+    case '/student/dashboard':
+        require __DIR__ . '/routes/student/dashboard.php';
         break;
     case '/dashboard':
         session_start();

@@ -39,7 +39,7 @@ $username = htmlspecialchars($_SESSION['username']);
     <div class="flex min-h-screen">
         <!-- Sidebar (Hidden by default on mobile) -->
         <div id="sidebar" class="w-64 bg-white shadow-lg p-4 md:block hidden">
-            <?php include __DIR__ . '/sidebar.php'; ?>
+            <?php include __DIR__ . '/../sidebar/sidebar_student.php'; ?>
         </div>
 
         <!-- Overlay for mobile (to close sidebar when clicking outside) -->
