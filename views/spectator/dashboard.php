@@ -9,7 +9,7 @@ include __DIR__ . '/../../utils/header/header_spectator.php';
         <!-- Header Section -->
         <div class="text-center">
             <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Tableau de bord Spectateur</h2>
-            <p class="mt-2 text-sm text-gray-600">Bienvenue, <?php echo htmlspecialchars($_SESSION['username']); ?> !</p>
+            <p class="mt-2 text-sm text-gray-600">Bienvenue, <?php echo htmlspecialchars($_SESSION['username']); ?> 🎉</p>
         </div>
 
         <!-- Success Message -->
