@@ -1,5 +1,12 @@
-<?php session_start(); ?>
-<?php include __DIR__ . '/layout.php'; ?>
+<?php
+$page_title = 'Accueil';
+include __DIR__ . '/../utils/header/header_vitrine.php';
+
+// Check if the user is logged in
+$isLoggedIn = isset($_SESSION['user_id']);
+$username = $isLoggedIn ? htmlspecialchars($_SESSION['username']) : 'Guest';
+?>
+
 <div class="bg-gray-50">
     <!-- Hero Section -->
     <div class="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
@@ -10,14 +17,20 @@
             <p class="text-lg md:text-xl mb-8">
                 Une plateforme gamifiée pour rendre votre recherche d'alternance motivante et engageante.
             </p>
-            <div class="flex justify-center space-x-4">
-                <a href="/register" class="inline-flex items-center px-6 py-3 bg-white text-blue-600 text-sm font-medium rounded-md hover:bg-gray-100 transition-colors duration-200">
-                    Inscription
-                </a>
-                <a href="/login" class="inline-flex items-center px-6 py-3 bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-600 transition-colors duration-200">
-                    Connexion
-                </a>
-            </div>
+            <?php if ($isLoggedIn): ?>
+                <div class="flex justify-center">
+                    <p class="text-xl md:text-2xl font-semibold">Hey <?php echo $username; ?> 🎉</p>
+                </div>
+            <?php else: ?>
+                <div class="flex justify-center space-x-4">
+                    <a href="/register" class="inline-flex items-center px-6 py-3 bg-white text-blue-600 text-sm font-medium rounded-md hover:bg-gray-100 transition-colors duration-200">
+                        Inscription
+                    </a>
+                    <a href="/login" class="inline-flex items-center px-6 py-3 bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-600 transition-colors duration-200">
+                        Connexion
+                    </a>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 

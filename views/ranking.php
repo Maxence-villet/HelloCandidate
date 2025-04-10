@@ -1,13 +1,14 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Classement Global - HelloCandidate</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-100 min-h-screen">
-    <?php include __DIR__ . '/../utils/header.php'; ?>
+<?php 
+
+session_start();
+
+if($_SESSION["user_type"] == "spectator") {
+    include __DIR__ . '/../utils/header/header_spectator.php';
+} else {
+    include __DIR__ . '/../utils/header/header_student.php';
+}
+
+?> 
 
     <div class="container mx-auto py-8 px-4">
         <!-- Titre et position de l'utilisateur -->

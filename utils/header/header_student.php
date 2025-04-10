@@ -1,14 +1,8 @@
 <?php
 session_start();
 
-if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'spectator') {
+if($_SESSION["user_type"] == "spectator") {
     header('Location: /spectator/dashboard');
-    exit;
-}
-
-if (!isset($_SESSION['user_id'])) {
-    header('Location: /login');
-    exit;
 }
 
 $username = htmlspecialchars($_SESSION['username']);
@@ -21,6 +15,7 @@ $username = htmlspecialchars($_SESSION['username']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HelloCandidate - <?php echo htmlspecialchars($page_title ?? 'Dashboard'); ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 </head>
 <body class="bg-gray-50">
     <!-- Top Bar -->
@@ -45,7 +40,7 @@ $username = htmlspecialchars($_SESSION['username']);
     <div class="flex min-h-screen">
         <!-- Sidebar (Hidden by default on mobile) -->
         <div id="sidebar" class="w-64 bg-white shadow-lg p-4 md:block hidden">
-            <?php include __DIR__ . '/sidebar.php'; ?>
+            <?php include __DIR__ . '/../sidebar/sidebar_student.php'; ?>
         </div>
 
         <!-- Overlay for mobile (to close sidebar when clicking outside) -->
