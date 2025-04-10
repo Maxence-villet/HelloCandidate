@@ -2,10 +2,10 @@
 
 session_start();
 
-if($_SESSION["user_type"] == "spectator") {
-    include __DIR__ . '/../../utils/header/header_spectator.php';
-} else {
+if($_SESSION["user_type"] == "student") {
     include __DIR__ . '/../../utils/header/header_student.php';
+} else {
+    header('Location: /');
 }
 
 ?>    
