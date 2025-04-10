@@ -8,7 +8,7 @@ if($_SESSION["user_type"] == "spectator") {
     header('Location: /spectator/dashboard');
 } 
 if($_SESSION["user_type"] == "student") {
-    header('Location: /welcome');
+    header('Location: /student/dashboard');
 } 
 ?>
 

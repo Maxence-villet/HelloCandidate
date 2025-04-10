@@ -94,7 +94,7 @@ class AuthController {
             if($_SESSION["user_type"] == "spectator") {
                 header('Location: /spectator/dashboard');
             }
-            else if($_SESSION["user_type"] == "spectator") {
+            else if($_SESSION["user_type"] == "student") {
                 header('Location: /student/dashboard');
             }
             else {
