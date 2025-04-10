@@ -1,6 +1,6 @@
 <?php
 $page_title = 'Inscription';
-include __DIR__ . '/../utils/header_auth.php';
+include __DIR__ . '/../utils/header/header_auth.php';
 ?>
 
 <!-- Main Content -->

@@ -91,7 +91,15 @@ class AuthController {
     // Les autres méthodes (showLoginForm, login, logout, etc.) restent inchangées
     public function showLoginForm() {
         if (isset($_SESSION['user_id'])) {
-            header('Location: /welcome');
+            if($_SESSION["user_type"] == "spectator") {
+                header('Location: /spectator/dashboard');
+            }
+            else if($_SESSION["user_type"] == "spectator") {
+                header('Location: /student/dashboard');
+            }
+            else {
+                header('Location: /');
+            }
             exit;
         }
         include __DIR__ . '/../views/login.php';
@@ -145,14 +153,22 @@ class AuthController {
         $_SESSION['username'] = $user['username'];
         $_SESSION['user_type'] = $user['user_type'];
 
-        header('Location: /welcome');
+        if($_SESSION["user_type"] == "spectator") {
+            header('Location: /spectator/dashboard');
+        }
+        else if($_SESSION["user_type"] == "student") {
+            header('Location: /student/dashboard');
+        }
+        else {
+            header('Location: /');
+        }
         exit;
     }
 
     public function logout() {
         session_unset();
         session_destroy();
-        header('Location: /login');
+        header('Location: /');
         exit;
     }
 
