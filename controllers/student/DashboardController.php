@@ -70,7 +70,7 @@ class DashboardController {
 
         // Calculate percentage change
         $applications_change = ($previous_month > 0) ? (($current_month - $previous_month) / $previous_month * 100) : 0;
-        $data['applications_change_text'] = $applications_change >= 0 ? "Increased by " . round($applications_change, 2) . "%" : "Decreased by " . round(abs($applications_change), 2) . "%";
+        $data['applications_change_text'] = $applications_change >= 0 ? "Augmentation de " . round($applications_change, 2) . "%" : "Diminution de " . round(abs($applications_change), 2) . "%";
         $data['applications_change_color'] = $applications_change >= 0 ? "text-green-600" : "text-red-600";
 
         // 2. Fetch Pending Applications and Percentage Change
@@ -113,7 +113,7 @@ class DashboardController {
 
         // Calculate percentage change
         $pending_change = ($previous_pending > 0) ? (($current_pending - $previous_pending) / $previous_pending * 100) : 0;
-        $data['pending_change_text'] = $pending_change >= 0 ? "Increased by " . round($pending_change, 2) . "%" : "Decreased by " . round(abs($pending_change), 2) . "%";
+        $data['pending_change_text'] = $pending_change >= 0 ? "Augmentation de " . round($pending_change, 2) . "%" : "Diminution de " . round(abs($pending_change), 2) . "%";
         $data['pending_change_color'] = $pending_change >= 0 ? "text-green-600" : "text-red-600";
 
         // 3. Fetch Rank Progress
@@ -146,7 +146,7 @@ class DashboardController {
         $applications_needed = $next_rank ? ($next_rank['min_applications'] - $data['total_applications']) : 0;
         $progress_percentage = $next_rank ? (($data['total_applications'] - $current_rank['min_applications']) / ($next_rank['min_applications'] - $current_rank['min_applications']) * 100) : 100;
         $data['current_rank'] = $current_rank;
-        $data['progress_text'] = $next_rank ? round($progress_percentage, 2) . "% to next rank ($applications_needed more applications)" : "Max rank achieved!";
+        $data['progress_text'] = $next_rank ? round($progress_percentage, 2) . "% atteint pour le prochain rang ($applications_needed candidatures restantes)" : "Dernier rang atteint!";
 
         // 4. Fetch Application Status Over Time (for the bar chart)
         $stmt = $this->conn->prepare("

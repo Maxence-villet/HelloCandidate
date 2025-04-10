@@ -17,19 +17,19 @@ include __DIR__ . '/../../utils/header/header_student.php';
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6">
         <!-- Total Applications -->
         <div class="bg-white rounded-lg shadow-lg p-4 sm:p-6">
-            <h3 class="text-lg font-semibold text-gray-800">Total Applications</h3>
+            <h3 class="text-lg font-semibold text-gray-800">Total des Candidatures</h3>
             <p class="text-2xl sm:text-3xl font-bold text-gray-900 mt-2"><?php echo $total_applications; ?></p>
             <p class="text-sm <?php echo $applications_change_color; ?> mt-2"><?php echo $applications_change_text; ?></p>
         </div>
         <!-- Pending Applications -->
         <div class="bg-white rounded-lg shadow-lg p-4 sm:p-6">
-            <h3 class="text-lg font-semibold text-gray-800">Pending Applications</h3>
+            <h3 class="text-lg font-semibold text-gray-800">Applications en Attentes</h3>
             <p class="text-2xl sm:text-3xl font-bold text-gray-900 mt-2"><?php echo $pending_applications; ?></p>
             <p class="text-sm <?php echo $pending_change_color; ?> mt-2"><?php echo $pending_change_text; ?></p>
         </div>
         <!-- Rank Progress -->
         <div class="bg-white rounded-lg shadow-lg p-4 sm:p-6">
-            <h3 class="text-lg font-semibold text-gray-800">Rank Progress</h3>
+            <h3 class="text-lg font-semibold text-gray-800">Progression du rang</h3>
             <p class="text-lg sm:text-xl font-bold text-gray-900 mt-2"><?php echo htmlspecialchars($current_rank['rank_name'] . ' ' . $current_rank['sub_rank']); ?></p>
             <p class="text-sm text-blue-600 mt-2"><?php echo $progress_text; ?></p>
         </div>
@@ -39,7 +39,7 @@ include __DIR__ . '/../../utils/header/header_student.php';
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <!-- Application Status Over Time -->
         <div class="bg-white rounded-lg shadow-lg p-4 sm:p-6">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Application Status Over Time</h3>
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Statut des candidatures au fil du temps</h3>
             <div class="w-full h-64 sm:h-80">
                 <canvas id="applicationStatusChart"></canvas>
             </div>
