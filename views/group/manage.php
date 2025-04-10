@@ -1,4 +1,8 @@
-<?php require __DIR__ . '/../layout.php'; ?>
+<?php
+$page_title = 'Spectator Dashboard';
+$current_page = 'spectator_dashboard';
+include __DIR__ . '/../../utils/header/header_spectator.php';
+?>
 <div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl mx-auto space-y-6">
         <div class="text-center">
