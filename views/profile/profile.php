@@ -179,12 +179,6 @@ include __DIR__ . '/../../utils/header/header_student.php';
                 </div>
             </div>
         </div>
-
-        <div class="text-center pt-4">
-            <a href="/welcome" class="text-sm font-medium text-blue-600 hover:text-blue-500">
-                ← Retour au tableau de bord
-            </a>
-        </div>
     </div>
 </main>
 </div>
