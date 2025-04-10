@@ -3,9 +3,6 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
-// Check if username is set in the session
-$username = isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'Guest';
 ?>
 
 <!DOCTYPE html>
@@ -15,6 +12,7 @@ $username = isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username'
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HelloCandidate - <?php echo htmlspecialchars($page_title ?? 'Spectator Dashboard'); ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 </head>
 <body class="bg-gray-50">
     <!-- Top Bar -->
@@ -28,11 +26,10 @@ $username = isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username'
             </button>
             <h1 class="text-2xl font-bold text-blue-600">HelloCandidate</h1>
         </div>
-        <div class="flex items-center space-x-4">
-            <input type="text" placeholder="Search..." class="border rounded-lg px-3 py-1 hidden md:block">
-            <div class="flex items-center space-x-2">
-                <span class="text-gray-700"><?php echo $username; ?></span>
-            </div>
+        <div class="flex items-center">
+            <a href="/logout" class="text-red-600 hover:text-red-500 focus:outline-none" title="Déconnexion">
+                <i class="fas fa-power-off fa-lg"></i>
+            </a>
         </div>
     </header>
 
