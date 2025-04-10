@@ -27,7 +27,7 @@ $dashboardUrl = ($userType === 'spectator') ? '/spectator/dashboard' : '/student
     <!-- Top Bar -->
     <header class="bg-white shadow-sm p-4 flex justify-between items-center">
         <div class="flex items-center">
-            <h1 class="text-2xl font-bold text-blue-600">HelloCandidate</h1>
+            <h1 class="text-2xl font-bold text-black">HelloCandidate</h1>
         </div>
         <div class="flex items-center space-x-4">
             <?php if ($isLoggedIn): ?>
