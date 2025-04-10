@@ -4,8 +4,6 @@ session_start();
 if($_SESSION["user_type"] == "spectator") {
     header('Location: /spectator/dashboard');
 }
-
-$username = htmlspecialchars($_SESSION['username']);
 ?>
 
 <!DOCTYPE html>
@@ -29,11 +27,10 @@ $username = htmlspecialchars($_SESSION['username']);
             </button>
             <h1 class="text-2xl font-bold text-blue-600">HelloCandidate</h1>
         </div>
-        <div class="flex items-center space-x-4">
-            <input type="text" placeholder="Search..." class="border rounded-lg px-3 py-1 hidden md:block">
-            <div class="flex items-center space-x-2">
-                <span class="text-gray-700"><?php echo $username; ?></span>
-            </div>
+        <div class="flex items-center">
+            <a href="/logout" class="text-red-600 hover:text-red-500 focus:outline-none" title="Déconnexion">
+                <i class="fas fa-power-off fa-lg"></i>
+            </a>
         </div>
     </header>
 
