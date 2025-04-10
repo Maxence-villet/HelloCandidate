@@ -9,6 +9,9 @@ $username = isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username'
 ?>
 
 <aside class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg p-4 transform md:transform-none transition-transform duration-300 z-20">
+    <div>
+        <h2 class="text-2xl font-bold text-black mb-4">HelloCandidate</h2>
+    </div>
     <div class="flex items-center space-x-3 mb-6">
         <div>
             <h2 class="text-lg font-semibold text-gray-800"><?php echo $username; ?></h2>
