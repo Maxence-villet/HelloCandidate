@@ -1,18 +1,25 @@
 <?php 
-
-
 if($_SESSION["user_type"] == "student") {
     include __DIR__ . '/../../utils/header/header_student.php';
 } else {
     header('Location: /');
 }
-
 ?>    
-    <div class="container mx-auto py-8 px-4">
-        <div class="flex justify-between items-center mb-8">
-            <h1 class="text-2xl font-bold text-gray-800">Mes notifications</h1>
+
+<!-- Main Content -->
+<main class="flex-1 p-4 sm:p-6 md:p-8 items-center">
+    <div class="container mx-auto">
+        <!-- Titre -->
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8 gap-4">
+            <div class="flex items-center space-x-2">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+                <h1 class="text-2xl font-bold text-gray-900">Mes notifications</h1>
+            </div>
         </div>
 
+        <!-- Contenu des notifications -->
         <div class="bg-white shadow overflow-hidden sm:rounded-lg">
             <?php if (empty($notifications)): ?>
                 <div class="p-8 text-center">
@@ -84,5 +91,6 @@ if($_SESSION["user_type"] == "student") {
             <?php endif; ?>
         </div>
     </div>
+</main>
 </body>
 </html>
