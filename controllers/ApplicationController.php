@@ -225,26 +225,73 @@ class ApplicationController {
      * Affiche les détails d'une candidature spécifique
      */
     public function viewApplication($applicationId) {
+        // Démarrer la session pour vérifier l'utilisateur connecté
+        session_start();
+    
+        // Vérifier si l'utilisateur est connecté
         if (!isset($_SESSION['user_id'])) {
             header('Location: /login');
             exit;
         }
-
-        $userId = $_SESSION['user_id'];
+    
         $conn = $this->db->getConnection();
-        $stmt = $conn->prepare("SELECT * FROM applications WHERE application_id = ? AND user_id = ?");
-        $stmt->bind_param("ii", $applicationId, $userId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $application = $result->fetch_assoc();
-        $stmt->close();
-
-        if (!$application) {
-            $_SESSION['error_message'] = "Candidature non trouvée ou accès non autorisé.";
-            header('Location: /applications');
+    
+        // Convertir les IDs en entier pour éviter les injections
+        $applicationId = (int)$applicationId;
+        $userId = (int)$_SESSION['user_id'];
+    
+        // Vérifier que l'ID est valide (supérieur à 0)
+        if ($applicationId <= 0) {
+            http_response_code(400);
+            echo "ID de candidature invalide";
             exit;
         }
-
-        include __DIR__ . '/../views/applications/view.php';
+    
+        // Construire la requête SQL - SEULEMENT les champs de la table applications
+        $query = "SELECT 
+            application_id, 
+            company_name, 
+            position, 
+            submission_date, 
+            status, 
+            address, 
+            offer_link, 
+            description, 
+            cover_letter_path, 
+            created_at
+          FROM applications 
+          WHERE application_id = ? AND user_id = ?";
+    
+        // Exécuter la requête
+        $stmt = $conn->prepare($query);
+    
+        // Supposons que application_id et user_id sont des entiers
+        $stmt->bind_param("ii", $applicationId, $userId);
+    
+        $stmt->execute();
+    
+        // Récupérer le résultat
+        $result = $stmt->get_result();
+    
+        // Vérifier si la requête a réussi
+        if ($result === false) {
+            http_response_code(500);
+            echo "Erreur lors de l'exécution de la requête : " . $conn->error;
+            exit;
+        }
+    
+        // Récupérer les données
+        $application = $result->fetch_assoc();
+    
+        // Vérifier si la candidature existe
+        if ($application) {
+            // Inclure la vue pour afficher les détails
+            require __DIR__ . '/../views/applications/view.php';
+        } else {
+            // Si aucune candidature n'est trouvée, renvoyer une erreur 404
+            http_response_code(404);
+            echo "Candidature non trouvée ou vous n'avez pas l'autorisation de la voir.";
+            exit;
+        }
     }
 }

@@ -36,6 +36,16 @@ switch ($request) {
             $controller->showApplicationForm();
         }
         break;
+    case '/applications/view':
+        require __DIR__ . '/controllers/ApplicationController.php';
+        $controller = new ApplicationController();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['application_id'])) {
+            $controller->viewApplication($_POST['application_id']);
+        } else {
+            http_response_code(400);
+            header('Location: /student/dashboard');
+        }
+        break;
     case '/rankings':
         require __DIR__ . '/controllers/RankingController.php';
         $controller = new RankingController();

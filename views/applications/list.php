@@ -196,7 +196,10 @@ include __DIR__ . '/../../utils/header/header_student.php';
                                 </span>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                                <a href="/applications/view/<?php echo $app['application_id']; ?>" class="text-blue-600 hover:text-blue-900 mr-3">Voir</a>
+                            <form action="/applications/view" method="POST" class="inline">
+                                <input type="hidden" name="application_id" value="<?php echo $app['application_id']; ?>">
+                                <button type="submit" class="text-blue-600 hover:text-blue-900 mr-3 bg-transparent border-none cursor-pointer">Voir</button>
+                            </form>
                                 <?php if ($app['cover_letter_path']): ?>
                                     <a href="<?php echo "public" . $app['cover_letter_path']; ?>" target="_blank" class="text-blue-600 hover:text-blue-900">Lettre</a>
                                 <?php endif; ?>
@@ -225,7 +228,10 @@ include __DIR__ . '/../../utils/header/header_student.php';
                         <?php endif; ?>
                         <div class="text-sm text-gray-500 mb-2"><?php echo date('d/m/Y', strtotime($app['submission_date'])); ?></div>
                         <div class="flex space-x-3">
-                            <a href="/applications/view/<?php echo $app['application_id']; ?>" class="text-blue-600 hover:text-blue-900 text-sm">Voir</a>
+                        <form action="/applications/view" method="POST" class="inline">
+                            <input type="hidden" name="application_id" value="<?php echo $app['application_id']; ?>">
+                            <button type="submit" class="text-blue-600 hover:text-blue-900 text-sm bg-transparent border-none cursor-pointer">Voir</button>
+                        </form>
                             <?php if ($app['offer_link']): ?>
                                 <a href="<?php echo htmlspecialchars($app['offer_link']); ?>" target="_blank" class="text-blue-600 hover:text-blue-900 text-sm">Voir l'offre</a>
                             <?php endif; ?>
