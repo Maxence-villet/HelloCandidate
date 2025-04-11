@@ -86,28 +86,45 @@ ALTER TABLE `user_badges` ADD FOREIGN KEY (`user_id`) REFERENCES `users` (`user_
 ALTER TABLE `user_badges` ADD FOREIGN KEY (`badge_id`) REFERENCES `badges` (`badge_id`) ON DELETE CASCADE;
 
 
+
 INSERT INTO ranks (rank_name, sub_rank, min_applications) VALUES
-('Bronze', 3, 0),    -- Début, pas de candidatures nécessaires
-('Bronze', 2, 10),
-('Bronze', 1, 20),
-('Argent', 3, 30),   -- Passage à Argent après 3 sous-rangs de Bronze
-('Argent', 2, 40),
-('Argent', 1, 50),
-('Or', 3, 60),
-('Or', 2, 70),
-('Or', 1, 80),
-('Émeraude', 3, 90),
-('Émeraude', 2, 100),
-('Émeraude', 1, 110),
-('Diamant', 3, 120),
-('Diamant', 2, 130),
-('Diamant', 1, 140),
-('Maitre', 3, 150),
-('Maitre', 2, 160),
-('Maitre', 1, 170),
-('Challenger', 3, 180),
-('Challenger', 2, 190),
-('Challenger', 1, 200),
-('Grand Challenger', 3, 210),
-('Grand Challenger', 2, 220),
-('Grand Challenger', 1, 230);
+-- Fer
+('Fer', 3, 0),
+('Fer', 2, 10),
+('Fer', 1, 20),
+-- Bronze
+('Bronze', 3, 30),
+('Bronze', 2, 40),
+('Bronze', 1, 50),
+-- Argent
+('Argent', 3, 60),
+('Argent', 2, 70),
+('Argent', 1, 80),
+-- Or
+('Or', 3, 90),
+('Or', 2, 100),
+('Or', 1, 110),
+-- Platine
+('Platine', 3, 120),
+('Platine', 2, 130),
+('Platine', 1, 140),
+-- Émeraude
+('Émeraude', 3, 150),
+('Émeraude', 2, 160),
+('Émeraude', 1, 170),
+-- Diamant
+('Diamant', 3, 180),
+('Diamant', 2, 190),
+('Diamant', 1, 200),
+-- Maître
+('Maître', 3, 210),
+('Maître', 2, 220),
+('Maître', 1, 230),
+-- Grand Maître
+('Grand Maître', 3, 240),
+('Grand Maître', 2, 250),
+('Grand Maître', 1, 260),
+-- Challenger
+('Challenger', 3, 270),
+('Challenger', 2, 280),
+('Challenger', 1, 290);
