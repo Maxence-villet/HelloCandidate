@@ -1,6 +1,5 @@
 <?php 
 
-session_start();
 
 if($_SESSION["user_type"] == "spectator") {
     include __DIR__ . '/../utils/header/header_spectator.php';

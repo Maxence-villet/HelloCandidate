@@ -1,6 +1,5 @@
 <?php 
 
-session_start();
 
 if($_SESSION["user_type"] == "student") {
     include __DIR__ . '/../../utils/header/header_student.php';
