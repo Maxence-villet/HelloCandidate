@@ -43,7 +43,7 @@ utils/ # Helpers (upload, DB connexion...)
 ## 🗃 Architecture de la base de données
 
 ### Schéma principal (extrait)
-![Schéma de la base de données](public/images/database.png)  
+![Schéma de la base de données](public/images/Database.png)  
 
 **Tables clés** :
 - `users` : Comptes (candidats/spectateurs).
