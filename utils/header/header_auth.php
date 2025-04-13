@@ -2,14 +2,16 @@
 // Ensure session is started if needed (though not required for auth pages in this case)
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
+
+    if($_SESSION["user_type"] == "spectator") {
+        header('Location: /spectator/dashboard');
+    } 
+    if($_SESSION["user_type"] == "student") {
+        header('Location: /student/dashboard');
+    } 
 }
 
-if($_SESSION["user_type"] == "spectator") {
-    header('Location: /spectator/dashboard');
-} 
-if($_SESSION["user_type"] == "student") {
-    header('Location: /student/dashboard');
-} 
+
 ?>
 
 <!DOCTYPE html>

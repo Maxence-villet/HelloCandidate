@@ -1,61 +1,140 @@
-<?php include __DIR__ . '/layout.php'; ?>
-<div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-4xl mx-auto">
-        <!-- Page Title -->
-        <div class="bg-white rounded-lg shadow-lg p-8 mb-6 text-center">
-            <h1 class="text-3xl font-bold text-blue-600 mb-4">
-                Aide - Système de Rangs et Sous-Rangs
+<?php 
+if($_SESSION["user_type"] == "spectator") {
+    include __DIR__ . '/../utils/header/header_spectator.php';
+} else {
+    include __DIR__ . '/../utils/header/header_student.php';
+}
+?>
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aide - Système de Rangs | HelloCandidate</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+<div class="min-h-screen">
+    <!-- Ajustement de la div principale pour être centrée avec la sidebar -->
+    <div class="md:ml-16 md:mr-16 max-w-5xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <!-- Hero Section -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight lg:text-6xl">
+                Système de Rangs HelloCandidate
             </h1>
-            <p class="text-gray-600">
-                Découvrez comment fonctionne le système de gamification de HelloCandidate pour rendre votre recherche d'alternance plus motivante !
+            <p class="mt-5 max-w-xl mx-auto text-xl text-gray-500">
+                Maximisez votre progression avec notre système de gamification motivant
             </p>
         </div>
 
-        <!-- Rank Progression Line -->
-        <div class="bg-white rounded-lg shadow-lg p-8 mb-6">
-            <h2 class="text-2xl font-semibold text-blue-600 mb-6 text-center">Progression des Rangs</h2>
-            <div class="flex flex-wrap justify-center items-center space-x-4">
-                <?php foreach ($ranks as $index => $rank): ?>
-                    <!-- Rank Image -->
-                    <div class="flex flex-col items-center">
+        <!-- Rank Visualization -->
+        <div class="bg-white shadow-lg rounded-xl p-6 sm:p-8 mb-12">
+            <div class="text-center mb-8 sm:mb-10">
+                <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">Votre parcours de progression</h2>
+                <p class="mt-2 text-base sm:text-lg text-gray-500">10 rangs à conquérir pour devenir un champion de la recherche d'alternance</p>
+            </div>
+            
+            <div class="grid grid-cols-3 sm:grid-cols-5 gap-4 sm:gap-6">
+                <?php 
+                $globalIndex = 0; // Index global pour les points
+                foreach ($ranks as $rank): ?>
+                    <div class="flex flex-col items-center group">
                         <?php
-                        // Normalize the rank_name to lowercase and encode spaces for the URL
                         $rankImageName = strtolower($rank);
-                        // Do NOT replace spaces with hyphens; instead, encode the filename for the URL
                         $rankImagePath = "/public/rank/" . rawurlencode($rankImageName) . ".png";
                         ?>
-                        <img src="<?php echo htmlspecialchars($rankImagePath); ?>" alt="<?php echo htmlspecialchars($rank); ?>" class="w-12 h-12 mb-2">
-                        <span class="text-sm font-medium text-gray-800"><?php echo htmlspecialchars($rank); ?></span>
+                        <div class="flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-white rounded-full shadow-md border-2 border-gray-200 group-hover:border-indigo-400 transition-all duration-300">
+                            <img src="<?php echo htmlspecialchars($rankImagePath); ?>" alt="<?php echo htmlspecialchars($rank); ?>" class="w-6 h-6 sm:w-8 sm:h-8">
+                        </div>
+                        <div class="mt-2 sm:mt-3 text-center">
+                            <span class="text-sm sm:text-base font-medium text-gray-700"><?php echo htmlspecialchars($rank); ?></span>
+                            <div class="text-xs sm:text-sm text-gray-400"><?php echo $globalIndex * 30; ?> points</div>
+                        </div>
                     </div>
-
-                    <!-- Arrow (except after the last rank) -->
-                    <?php if ($index < count($ranks) - 1): ?>
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                        </svg>
-                    <?php endif; ?>
+                    <?php $globalIndex++; // Incrémentation de l'index global ?>
                 <?php endforeach; ?>
             </div>
         </div>
 
-        <!-- Explanation of the Rank and Sub-Rank System -->
-        <div class="bg-white rounded-lg shadow-lg p-8">
-            <h2 class="text-2xl font-semibold text-blue-600 mb-4">Comment fonctionne notre système de gamification ?</h2>
-            <p class="text-gray-600 mb-4">
-                Chez HelloCandidate, nous avons conçu un système de gamification pour rendre votre recherche d'alternance plus engageante et motivante. Voici les points clés :
-            </p>
-            <ul class="list-disc list-inside space-y-2 text-gray-600">
-                <li><strong>Envoyez des candidatures pour progresser :</strong> Chaque candidature validée vous rapproche d'un nouveau sous-rang. Par exemple, 10 candidatures vous font passer de Fer 3 à Fer 2.</li>
-                <li><strong>Montez dans les rangs :</strong> Il y a 10 rangs à conquérir : Fer, Bronze, Argent, Or, Platine, Émeraude, Diamant, Maître, Grand Maître, et Challenger. Pour passer d’un rang à un autre (ex. : Bronze 1 à Argent 3), vous devez compléter les 3 sous-rangs du rang actuel.</li>
-                <li><strong>Comparez-vous aux autres :</strong> Consultez le classement global pour voir votre position par rapport aux autres utilisateurs et visez le top 100 !</li>
-            </ul>
-            <p class="text-gray-600 mt-4">
-                Prêt à commencer ? Ajoutez votre première candidature et commencez votre ascension dans les rangs !
-            </p>
-            <div class="text-center mt-6">
-                <a href="/welcome" class="text-sm font-medium text-blue-600 hover:text-blue-500">
-                    ← Retour à la page de bienvenue
-                </a>
+        <!-- How It Works Section -->
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <!-- Left Column -->
+            <div class="bg-white shadow-xl rounded-2xl p-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Comment progresser ?</h2>
+                
+                <div class="space-y-6">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center h-10 w-10 rounded-md bg-blue-500 text-white">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-lg font-medium text-gray-900">Candidatures envoyées</h3>
+                            <p class="mt-1 text-gray-600">
+                                Chaque candidature validée vous rapporte des points. Plus vous postulez, plus vous progressez.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center h-10 w-10 rounded-md bg-blue-500 text-white">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-lg font-medium text-gray-900">Sous-rangs</h3>
+                            <p class="mt-1 text-gray-600">
+                                Chaque rang contient 3 sous-rangs (3, 2, 1). Complétez-les pour accéder au rang supérieur.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="bg-white shadow-xl rounded-2xl p-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Avantages</h2>
+                
+                <div class="space-y-6">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center h-10 w-10 rounded-md bg-blue-500 text-white">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-lg font-medium text-gray-900">Suivi de progression</h3>
+                            <p class="mt-1 text-gray-600">
+                                Visualisez en temps réel votre avancement vers le prochain rang.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center h-10 w-10 rounded-md bg-blue-500 text-white">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-lg font-medium text-gray-900">Classement</h3>
+                            <p class="mt-1 text-gray-600">
+                                Comparez votre progression avec les autres utilisateurs et motivez-vous mutuellement.
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
