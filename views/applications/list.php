@@ -1,6 +1,10 @@
 <?php
 $page_title = 'Mes Candidatures';
 include __DIR__ . '/../../utils/header/header_student.php';
+
+// Définir les variables de pagination (passées depuis le contrôleur)
+$totalPages = isset($totalPages) ? $totalPages : 1;
+$currentPage = isset($page) ? $page : 1;
 ?>
 
 <!-- Main Content -->
@@ -9,7 +13,7 @@ include __DIR__ . '/../../utils/header/header_student.php';
         <div class="bg-blue-600 text-white p-4 rounded-lg shadow-lg mx-auto max-w-md text-center animate-bounce">
             <p class="font-semibold"><?php echo htmlspecialchars($_SESSION['rank_up_message']); ?></p>
         </div>
-        <?php unset($_SESSION['rank_up_message']); // Supprimer après affichage ?>
+        <?php unset($_SESSION['rank_up_message']); ?>
     <?php endif; ?>
 
     <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
@@ -27,14 +31,14 @@ include __DIR__ . '/../../utils/header/header_student.php';
     <?php if (isset($_SESSION['success_message'])): ?>
         <div class="bg-green-100 text-green-700 p-4 rounded mb-6">
             <?php echo htmlspecialchars($_SESSION['success_message']); ?>
-            <?php unset($_SESSION['success_message']); // Supprimer le message après affichage ?>
+            <?php unset($_SESSION['success_message']); ?>
         </div>
     <?php endif; ?>
 
     <div class="mb-6 flex flex-wrap gap-2">
-        <!-- Les liens de filtrage rapide soumettent le formulaire avec un statut spécifique -->
         <form id="filter-form" action="/applications" method="POST" class="flex flex-wrap gap-2">
             <input type="hidden" name="status" id="status-hidden">
+            <input type="hidden" name="page" value="<?php echo $currentPage; ?>">
             <button type="submit" onclick="document.getElementById('status-hidden').value=''" class="px-2 py-1 text-xs sm:text-sm <?php echo !isset($_POST['status']) ? 'bg-blue-600 text-white' : 'bg-gray-200'; ?> rounded-md">
                 Toutes
             </button>
@@ -55,8 +59,8 @@ include __DIR__ . '/../../utils/header/header_student.php';
 
     <div class="bg-white p-4 rounded-lg shadow mb-6">
         <form action="/applications" method="POST" class="space-y-4">
+            <input type="hidden" name="page" value="<?php echo $currentPage; ?>">
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                <!-- Barre de recherche -->
                 <div class="sm:col-span-2">
                     <label for="search" class="sr-only">Rechercher</label>
                     <div class="relative">
@@ -70,8 +74,6 @@ include __DIR__ . '/../../utils/header/header_student.php';
                         </button>
                     </div>
                 </div>
-
-                <!-- Filtre par statut -->
                 <div>
                     <label for="status" class="sr-only">Statut</label>
                     <select name="status" id="status" class="block w-full py-2 px-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm">
@@ -82,16 +84,12 @@ include __DIR__ . '/../../utils/header/header_student.php';
                         <option value="accepted" <?= ($_POST['status'] ?? '') === 'accepted' ? 'selected' : '' ?>>Accepté</option>
                     </select>
                 </div>
-
-                <!-- Bouton de recherche -->
                 <div>
                     <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm">
                         Filtrer
                     </button>
                 </div>
             </div>
-
-            <!-- Filtres avancés (plage de dates) -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
                 <div>
                     <label for="date_from" class="block text-sm font-medium text-gray-700">À partir du</label>
@@ -196,10 +194,10 @@ include __DIR__ . '/../../utils/header/header_student.php';
                                 </span>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                            <form action="/applications/view" method="POST" class="inline">
-                                <input type="hidden" name="application_id" value="<?php echo $app['application_id']; ?>">
-                                <button type="submit" class="text-blue-600 hover:text-blue-900 mr-3 bg-transparent border-none cursor-pointer">Voir</button>
-                            </form>
+                                <form action="/applications/view" method="POST" class="inline">
+                                    <input type="hidden" name="application_id" value="<?php echo $app['application_id']; ?>">
+                                    <button type="submit" class="text-blue-600 hover:text-blue-900 mr-3 bg-transparent border-none cursor-pointer">Voir</button>
+                                </form>
                                 <?php if ($app['cover_letter_path']): ?>
                                     <a href="<?php echo "public" . $app['cover_letter_path']; ?>" target="_blank" class="text-blue-600 hover:text-blue-900">Lettre</a>
                                 <?php endif; ?>
@@ -228,10 +226,10 @@ include __DIR__ . '/../../utils/header/header_student.php';
                         <?php endif; ?>
                         <div class="text-sm text-gray-500 mb-2"><?php echo date('d/m/Y', strtotime($app['submission_date'])); ?></div>
                         <div class="flex space-x-3">
-                        <form action="/applications/view" method="POST" class="inline">
-                            <input type="hidden" name="application_id" value="<?php echo $app['application_id']; ?>">
-                            <button type="submit" class="text-blue-600 hover:text-blue-900 text-sm bg-transparent border-none cursor-pointer">Voir</button>
-                        </form>
+                            <form action="/applications/view" method="POST" class="inline">
+                                <input type="hidden" name="application_id" value="<?php echo $app['application_id']; ?>">
+                                <button type="submit" class="text-blue-600 hover:text-blue-900 text-sm bg-transparent border-none cursor-pointer">Voir</button>
+                            </form>
                             <?php if ($app['offer_link']): ?>
                                 <a href="<?php echo htmlspecialchars($app['offer_link']); ?>" target="_blank" class="text-blue-600 hover:text-blue-900 text-sm">Voir l'offre</a>
                             <?php endif; ?>
@@ -242,6 +240,33 @@ include __DIR__ . '/../../utils/header/header_student.php';
                     </div>
                 <?php endforeach; ?>
             </div>
+
+            <!-- Pagination Controls -->
+            <?php if ($totalPages > 1): ?>
+                <div class="flex justify-between items-center mt-6 p-4">
+                    <form action="/applications" method="POST" class="inline">
+                        <input type="hidden" name="page" value="<?php echo $currentPage - 1; ?>">
+                        <input type="hidden" name="search" value="<?php echo htmlspecialchars($_POST['search'] ?? ''); ?>">
+                        <input type="hidden" name="status" value="<?php echo htmlspecialchars($_POST['status'] ?? ''); ?>">
+                        <input type="hidden" name="date_from" value="<?php echo htmlspecialchars($_POST['date_from'] ?? ''); ?>">
+                        <input type="hidden" name="date_to" value="<?php echo htmlspecialchars($_POST['date_to'] ?? ''); ?>">
+                        <button type="submit" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md <?php echo $currentPage <= 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-300'; ?>" <?php echo $currentPage <= 1 ? 'disabled' : ''; ?>>
+                            Précédent
+                        </button>
+                    </form>
+                    <span class="text-sm text-gray-700">Page <?php echo $currentPage; ?> sur <?php echo $totalPages; ?></span>
+                    <form action="/applications" method="POST" class="inline">
+                        <input type="hidden" name="page" value="<?php echo $currentPage + 1; ?>">
+                        <input type="hidden" name="search" value="<?php echo htmlspecialchars($_POST['search'] ?? ''); ?>">
+                        <input type="hidden" name="status" value="<?php echo htmlspecialchars($_POST['status'] ?? ''); ?>">
+                        <input type="hidden" name="date_from" value="<?php echo htmlspecialchars($_POST['date_from'] ?? ''); ?>">
+                        <input type="hidden" name="date_to" value="<?php echo htmlspecialchars($_POST['date_to'] ?? ''); ?>">
+                        <button type="submit" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md <?php echo $currentPage >= $totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-300'; ?>" <?php echo $currentPage >= $totalPages ? 'disabled' : ''; ?>>
+                            Suivant
+                        </button>
+                    </form>
+                </div>
+            <?php endif; ?>
         <?php endif; ?>
     </div>
 
@@ -252,13 +277,10 @@ include __DIR__ . '/../../utils/header/header_student.php';
     <!-- Script pour jouer les sons -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Vérifier si un son d'ajout de candidature doit être joué
             <?php if (isset($_SESSION['play_application_sound']) && $_SESSION['play_application_sound']): ?>
                 document.getElementById('applicationSound').play();
                 <?php unset($_SESSION['play_application_sound']); ?>
             <?php endif; ?>
-
-            // Vérifier si un son de montée de rang doit être joué
             <?php if (isset($_SESSION['play_level_up_sound']) && $_SESSION['play_level_up_sound']): ?>
                 document.getElementById('levelUpSound').play();
                 <?php unset($_SESSION['play_level_up_sound']); ?>

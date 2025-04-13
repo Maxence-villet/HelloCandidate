@@ -161,11 +161,16 @@ class ApplicationController {
         }
     
         $userId = $_SESSION['user_id'];
-        // Utiliser $_POST au lieu de $_GET
         $searchQuery = trim($_POST['search'] ?? '');
         $statusFilter = $_POST['status'] ?? null;
         $dateFrom = $_POST['date_from'] ?? null;
         $dateTo = $_POST['date_to'] ?? null;
+        $page = isset($_POST['page']) ? (int)$_POST['page'] : 1;
+        $perPage = 10; // Nombre de candidatures par page
+
+        // S'assurer que la page est au minimum 1
+        $page = max(1, $page);
+        $offset = ($page - 1) * $perPage;
 
         // Réinitialiser les filtres si le bouton "Réinitialiser" est cliqué
         if (isset($_POST['reset'])) {
@@ -173,16 +178,56 @@ class ApplicationController {
             $statusFilter = null;
             $dateFrom = null;
             $dateTo = null;
+            $page = 1;
+            $offset = 0;
         }
     
         $conn = $this->db->getConnection();
         
-        // Construction dynamique de la requête
+        // Compter le nombre total de candidatures pour la pagination
+        $countQuery = "SELECT COUNT(*) as total FROM applications WHERE user_id = ?";
+        $countParams = [$userId];
+        $countTypes = 'i';
+
+        if (!empty($searchQuery)) {
+            $countQuery .= " AND (company_name LIKE ? OR position LIKE ? OR description LIKE ?)";
+            $searchParam = "%$searchQuery%";
+            $countParams = array_merge($countParams, [$searchParam, $searchParam, $searchParam]);
+            $countTypes .= 'sss';
+        }
+    
+        if ($statusFilter && in_array($statusFilter, ['pending', 'interview', 'rejected', 'accepted'])) {
+            $countQuery .= " AND status = ?";
+            $countParams[] = $statusFilter;
+            $countTypes .= 's';
+        }
+    
+        if ($dateFrom) {
+            $countQuery .= " AND submission_date >= ?";
+            $countParams[] = $dateFrom;
+            $countTypes .= 's';
+        }
+        if ($dateTo) {
+            $countQuery .= " AND submission_date <= ?";
+            $countParams[] = $dateTo;
+            $countTypes .= 's';
+        }
+
+        $stmt = $conn->prepare($countQuery);
+        $stmt->bind_param($countTypes, ...$countParams);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $totalApplications = $result->fetch_assoc()['total'];
+        $stmt->close();
+
+        // Calculer le nombre total de pages
+        $totalPages = ceil($totalApplications / $perPage);
+
+        // Construction dynamique de la requête pour récupérer les candidatures
         $query = "SELECT * FROM applications WHERE user_id = ?";
         $params = [$userId];
-        $types = 'i'; // user_id est un entier
+        $types = 'i';
     
-        // Filtre par recherche texte
         if (!empty($searchQuery)) {
             $query .= " AND (company_name LIKE ? OR position LIKE ? OR description LIKE ?)";
             $searchParam = "%$searchQuery%";
@@ -190,14 +235,12 @@ class ApplicationController {
             $types .= 'sss';
         }
     
-        // Filtre par statut
         if ($statusFilter && in_array($statusFilter, ['pending', 'interview', 'rejected', 'accepted'])) {
             $query .= " AND status = ?";
             $params[] = $statusFilter;
             $types .= 's';
         }
     
-        // Filtre par date
         if ($dateFrom) {
             $query .= " AND submission_date >= ?";
             $params[] = $dateFrom;
@@ -209,7 +252,10 @@ class ApplicationController {
             $types .= 's';
         }
     
-        $query .= " ORDER BY submission_date DESC";
+        $query .= " ORDER BY submission_date DESC LIMIT ? OFFSET ?";
+        $params[] = $perPage;
+        $params[] = $offset;
+        $types .= 'ii';
     
         $stmt = $conn->prepare($query);
         $stmt->bind_param($types, ...$params);
