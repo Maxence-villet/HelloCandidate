@@ -128,3 +128,9 @@ INSERT INTO ranks (rank_name, sub_rank, min_applications) VALUES
 ('Challenger', 3, 270),
 ('Challenger', 2, 280),
 ('Challenger', 1, 290);
+
+ALTER TABLE users
+ADD points INT DEFAULT 0;
+
+UPDATE users
+SET points = candidature_count;
