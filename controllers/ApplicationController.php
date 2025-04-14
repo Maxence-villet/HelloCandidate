@@ -72,7 +72,7 @@ class ApplicationController {
             // Ajouter une notification pour l'ajout de candidature
             $this->addNotification($userId, "Votre candidature chez $companyName a été enregistrée avec succès !");
 
-            // Vérifier si l'utilisateur a monté de rang ou sous-rang basé sur les points
+            // Vérifier si l'utilisateur a monté ou descendu de rang basé sur les points
             $this->checkRankProgression($userId);
             
             // Stocker le message de succès dans la session
@@ -110,7 +110,7 @@ class ApplicationController {
     }
 
     /**
-     * Vérifie si l'utilisateur a monté de rang ou sous-rang basé sur les points
+     * Vérifie si l'utilisateur a monté ou descendu de rang basé sur les points
      */
     private function checkRankProgression($userId) {
         $conn = $this->db->getConnection();
@@ -126,7 +126,7 @@ class ApplicationController {
         $points = $user['points'] ?? 0;
         $currentRankId = $user['rank_id'];
 
-        // Déterminer le rang actuel en fonction des points
+        // Déterminer le rang approprié en fonction des points
         $stmt = $conn->prepare("SELECT rank_id, rank_name, sub_rank, min_applications FROM ranks WHERE min_applications <= ? ORDER BY min_applications DESC LIMIT 1");
         $stmt->bind_param("i", $points);
         $stmt->execute();
@@ -136,20 +136,22 @@ class ApplicationController {
 
         $newRankId = $newRank['rank_id'] ?? 1; // Par défaut, Fer 3 (rank_id = 1)
 
-        // Vérifier si l'utilisateur a monté de rang ou sous-rang
-        if (is_null($currentRankId) || $newRankId > $currentRankId) {
+        // Vérifier si l'utilisateur doit monter ou descendre de rang
+        if (is_null($currentRankId) || $newRankId != $currentRankId) {
             // Mettre à jour le rank_id de l'utilisateur
             $stmt = $conn->prepare("UPDATE users SET rank_id = ? WHERE user_id = ?");
             $stmt->bind_param("ii", $newRankId, $userId);
             $stmt->execute();
             $stmt->close();
 
-            // Générer une notification pour la montée de rang/sous-rang
-            $message = "Félicitations ! Vous êtes passé à " . $newRank['rank_name'] . " " . $newRank['sub_rank'] . " !";
+            // Générer une notification pour le changement de rang
+            $message = $newRankId > $currentRankId
+                ? "Félicitations ! Vous êtes passé à " . $newRank['rank_name'] . " " . $newRank['sub_rank'] . " !"
+                : "Votre rang a été ajusté à " . $newRank['rank_name'] . " " . $newRank['sub_rank'] . " en raison de votre score.";
             $this->addNotification($userId, $message);
-            $_SESSION['rank_up_message'] = $message; // Stocker le message pour l'afficher
-            // Indiquer qu'un son doit être joué pour la montée de rang
-            $_SESSION['play_level_up_sound'] = true;
+            $_SESSION['rank_change_message'] = $message; // Stocker le message pour l'afficher
+            // Indiquer qu'un son doit être joué pour le changement de rang
+            $_SESSION['play_rank_change_sound'] = true;
         }
     }
 
@@ -343,7 +345,8 @@ class ApplicationController {
 
         $conn = $this->db->getConnection();
 
-        $stmt = $conn->prepare("SELECT user_id FROM applications WHERE application_id = ?");
+        // Récupérer l'ancien statut de la candidature
+        $stmt = $conn->prepare("SELECT user_id, status FROM applications WHERE application_id = ?");
         $stmt->bind_param("i", $applicationId);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -356,10 +359,28 @@ class ApplicationController {
             exit;
         }
 
+        $oldStatus = $application['status'];
+
+        // Mettre à jour le statut de la candidature
         $stmt = $conn->prepare("UPDATE applications SET status = ? WHERE application_id = ? AND user_id = ?");
         $stmt->bind_param("sii", $newStatus, $applicationId, $userId);
 
         if ($stmt->execute()) {
+            // Gérer les points en fonction du changement de statut (US18)
+            if ($oldStatus !== $newStatus) {
+                if ($newStatus === 'rejected') {
+                    $this->updateUserPoints($userId, -1);
+                    $this->addNotification($userId, "Vous avez perdu 1 point car une candidature a été marquée comme refusée.");
+                } elseif ($newStatus === 'accepted') {
+                    $this->updateUserPoints($userId, 5);
+                    $this->addNotification($userId, "Félicitations ! Vous avez gagné 5 points car une candidature a été acceptée.");
+                }
+                // Pas de changement de points pour 'pending' ou 'interview'
+            }
+
+            // Vérifier la progression de rang après mise à jour des points
+            $this->checkRankProgression($userId);
+
             $_SESSION['success_message'] = 'Statut mis à jour avec succès.';
         } else {
             $_SESSION['error_message'] = 'Erreur lors de la mise à jour du statut.';
@@ -367,6 +388,17 @@ class ApplicationController {
         $stmt->close();
 
         header('Location: /applications');
+    }
+
+    /**
+     * Met à jour les points de l'utilisateur
+     */
+    private function updateUserPoints($userId, $pointsChange) {
+        $conn = $this->db->getConnection();
+        $stmt = $conn->prepare("UPDATE users SET points = GREATEST(points + ?, 0) WHERE user_id = ?");
+        $stmt->bind_param("ii", $pointsChange, $userId);
+        $stmt->execute();
+        $stmt->close();
     }
 }
 ?>

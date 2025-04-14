@@ -1,4 +1,4 @@
-<?php 
+<?php
 if($_SESSION["user_type"] == "student") {
     include __DIR__ . '/../../utils/header/header_student.php';
 } else {
@@ -18,6 +18,18 @@ if($_SESSION["user_type"] == "student") {
                 <h1 class="text-2xl font-bold text-gray-900">Mes notifications</h1>
             </div>
         </div>
+
+        <!-- Afficher les messages de succès ou de montée de rang -->
+        <?php if ($successMessage): ?>
+            <div class="bg-green-100 text-green-700 p-4 rounded mb-6">
+                <p class="text-sm font-medium"><?php echo htmlspecialchars($successMessage); ?></p>
+            </div>
+        <?php endif; ?>
+        <?php if ($rankUpMessage): ?>
+            <div class="bg-blue-100 text-blue-700 p-4 rounded mb-6">
+                <p class="text-sm font-medium"><?php echo htmlspecialchars($rankUpMessage); ?></p>
+            </div>
+        <?php endif; ?>
 
         <!-- Contenu des notifications -->
         <div class="bg-white shadow overflow-hidden sm:rounded-lg">
@@ -52,10 +64,10 @@ if($_SESSION["user_type"] == "student") {
                                     <?php echo date('d/m/Y à H:i', strtotime($notification['created_at'])); ?>
                                 </p>
                                 <?php 
-                                    // Vérifier si le message est une invitation (simplifié sans regex)
+                                    // Vérifier si le message est une invitation
                                     $message = $notification['message'];
                                     if (strpos($message, "Vous avez été invité à rejoindre le groupe") !== false) {
-                                        // Extraire l'ID du groupe (supposons que le message contient "group_id:X" à la fin)
+                                        // Extraire l'ID du groupe
                                         $groupId = 0;
                                         $parts = explode("group_id:", $message);
                                         if (count($parts) > 1) {
@@ -92,5 +104,18 @@ if($_SESSION["user_type"] == "student") {
         </div>
     </div>
 </main>
+
+<!-- Ajout des sons pour les notifications -->
+<?php if ($playApplicationSound): ?>
+    <audio id="applicationSound" autoplay>
+        <source src="/public/sounds/application_submitted.mp3" type="audio/mpeg">
+    </audio>
+<?php endif; ?>
+<?php if ($playLevelUpSound): ?>
+    <audio id="levelUpSound" autoplay>
+        <source src="/public/sounds/level_up.mp3" type="audio/mpeg">
+    </audio>
+<?php endif; ?>
+
 </body>
 </html>
