@@ -175,23 +175,15 @@ $currentPage = isset($page) ? $page : 1;
                                 <?php echo date('d/m/Y', strtotime($app['submission_date'])); ?>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <?php 
-                                    $statusClasses = [
-                                        'pending' => 'bg-yellow-100 text-yellow-800',
-                                        'interview' => 'bg-blue-100 text-blue-800',
-                                        'rejected' => 'bg-red-100 text-red-800',
-                                        'accepted' => 'bg-green-100 text-green-800'
-                                    ];
-                                    $statusText = [
-                                        'pending' => 'En attente',
-                                        'interview' => 'Entretien',
-                                        'rejected' => 'Refusé',
-                                        'accepted' => 'Accepté'
-                                    ];
-                                ?>
-                                <span class="px-2 py-1 text-xs font-semibold rounded-full <?php echo $statusClasses[$app['status']]; ?>">
-                                    <?php echo $statusText[$app['status']]; ?>
-                                </span>
+                                <form action="/applications/update-status" method="POST">
+                                    <input type="hidden" name="application_id" value="<?php echo $app['application_id']; ?>">
+                                    <select name="status" onchange="this.form.submit()" class="px-2 py-1 text-xs font-semibold rounded-full <?php echo $statusClasses[$app['status']]; ?>">
+                                        <option value="pending" <?php echo $app['status'] === 'pending' ? 'selected' : ''; ?>>En attente</option>
+                                        <option value="interview" <?php echo $app['status'] === 'interview' ? 'selected' : ''; ?>>Entretien</option>
+                                        <option value="rejected" <?php echo $app['status'] === 'rejected' ? 'selected' : ''; ?>>Refusé</option>
+                                        <option value="accepted" <?php echo $app['status'] === 'accepted' ? 'selected' : ''; ?>>Accepté</option>
+                                    </select>
+                                </form>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
                                 <form action="/applications/view" method="POST" class="inline">
@@ -217,9 +209,15 @@ $currentPage = isset($page) ? $page : 1;
                                 <div class="font-medium text-gray-900"><?php echo htmlspecialchars($app['company_name']); ?></div>
                                 <div class="text-sm text-gray-900"><?php echo htmlspecialchars($app['position']); ?></div>
                             </div>
-                            <span class="px-2 py-1 text-xs font-semibold rounded-full <?php echo $statusClasses[$app['status']]; ?>">
-                                <?php echo $statusText[$app['status']]; ?>
-                            </span>
+                            <form action="/applications/update-status" method="POST">
+                                <input type="hidden" name="application_id" value="<?php echo $app['application_id']; ?>">
+                                <select name="status" onchange="this.form.submit()" class="px-2 py-1 text-xs font-semibold rounded-full <?php echo $statusClasses[$app['status']]; ?>">
+                                    <option value="pending" <?php echo $app['status'] === 'pending' ? 'selected' : ''; ?>>En attente</option>
+                                    <option value="interview" <?php echo $app['status'] === 'interview' ? 'selected' : ''; ?>>Entretien</option>
+                                    <option value="rejected" <?php echo $app['status'] === 'rejected' ? 'selected' : ''; ?>>Refusé</option>
+                                    <option value="accepted" <?php echo $app['status'] === 'accepted' ? 'selected' : ''; ?>>Accepté</option>
+                                </select>
+                            </form>
                         </div>
                         <?php if ($app['address']): ?>
                             <div class="text-sm text-gray-500 mb-1"><?php echo htmlspecialchars($app['address']); ?></div>

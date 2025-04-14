@@ -46,6 +46,16 @@ switch ($request) {
             header('Location: /student/dashboard');
         }
         break;
+    case '/applications/update-status':
+        require __DIR__ . '/controllers/ApplicationController.php';
+        $controller = new ApplicationController();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $controller->updateApplicationStatus();
+        } else {
+            http_response_code(405);
+            echo "Méthode non autorisée";
+        }
+        break;
     case '/rankings':
         require __DIR__ . '/controllers/RankingController.php';
         $controller = new RankingController();

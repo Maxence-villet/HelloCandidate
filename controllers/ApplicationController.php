@@ -271,8 +271,6 @@ class ApplicationController {
      * Affiche les détails d'une candidature spécifique
      */
     public function viewApplication($applicationId) {
-        // Démarrer la session pour vérifier l'utilisateur connecté
-    
         // Vérifier si l'utilisateur est connecté
         if (!isset($_SESSION['user_id'])) {
             header('Location: /login');
@@ -338,5 +336,56 @@ class ApplicationController {
             echo "Candidature non trouvée ou vous n'avez pas l'autorisation de la voir.";
             exit;
         }
+    }
+
+    /**
+     * Met à jour le statut d'une candidature
+     */
+    public function updateApplicationStatus() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['user_id'])) {
+            header('Location: /login');
+            exit;
+        }
+
+        $userId = (int)$_SESSION['user_id'];
+        $applicationId = (int)$_POST['application_id'];
+        $newStatus = $_POST['status'];
+
+        // Vérifier que le statut est valide
+        $validStatuses = ['pending', 'interview', 'rejected', 'accepted'];
+        if (!in_array($newStatus, $validStatuses)) {
+            $_SESSION['error_message'] = 'Statut invalide.';
+            header('Location: /applications');
+            exit;
+        }
+
+        $conn = $this->db->getConnection();
+
+        // Vérifier que la candidature appartient à l'utilisateur
+        $stmt = $conn->prepare("SELECT user_id FROM applications WHERE application_id = ?");
+        $stmt->bind_param("i", $applicationId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $application = $result->fetch_assoc();
+        $stmt->close();
+
+        if (!$application || $application['user_id'] !== $userId) {
+            $_SESSION['error_message'] = 'Candidature non trouvée ou non autorisée.';
+            header('Location: /applications');
+            exit;
+        }
+
+        // Mettre à jour le statut
+        $stmt = $conn->prepare("UPDATE applications SET status = ? WHERE application_id = ? AND user_id = ?");
+        $stmt->bind_param("sii", $newStatus, $applicationId, $userId);
+
+        if ($stmt->execute()) {
+            $_SESSION['success_message'] = 'Statut mis à jour avec succès.';
+        } else {
+            $_SESSION['error_message'] = 'Erreur lors de la mise à jour du statut.';
+        }
+        $stmt->close();
+
+        header('Location: /applications');
     }
 }
