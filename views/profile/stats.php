@@ -1,4 +1,5 @@
 <?php
+// File: stats.php
 $page_title = 'User Profile';
 $current_page = 'user_profil';
 include __DIR__ . '/../../utils/header/header_spectator.php';
@@ -13,14 +14,19 @@ $user_id = isset($_POST['user_id']) ? (int)$_POST['user_id'] : 0;
 $db = new Database();
 $conn = $db->getConnection();
 
-// Récupérer le nom d'utilisateur
-$query = "SELECT username FROM users WHERE user_id = ?";
+// Récupérer les informations de l'utilisateur
+$query = "SELECT username, points, rank_name, sub_rank 
+          FROM users u 
+          LEFT JOIN ranks r ON u.rank_id = r.rank_id 
+          WHERE u.user_id = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 $username = $user ? $user['username'] : 'Utilisateur inconnu';
+$points = $user ? $user['points'] : 0;
+$rank = $user ? ($user['rank_name'] . ' ' . $user['sub_rank']) : 'Non classé';
 
 // Récupérer les stats des 30 derniers jours
 $query = "SELECT DATE(submission_date) as date, COUNT(*) as count 
@@ -41,6 +47,17 @@ $averagePerDay = $totalApplications > 0 ? round($totalApplications / 30, 2) : 0;
 
 // Convertir les stats en JSON pour le JS
 $dailyStatsJson = json_encode($dailyStats);
+
+// Récupérer les candidatures
+$query = "SELECT company_name, position, status 
+          FROM applications 
+          WHERE user_id = ? 
+          ORDER BY submission_date DESC";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$applications = $result->fetch_all(MYSQLI_ASSOC);
 ?>
 
 <div class="min-h-screen bg-gray-50 py-6 px-4 sm:px-6 lg:px-8 flex justify-center">
@@ -48,6 +65,7 @@ $dailyStatsJson = json_encode($dailyStats);
         <!-- Titre centré -->
         <div class="text-center">
             <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900">Profil de l'étudiant : <?php echo htmlspecialchars($username); ?></h2>
+            <p class="text-sm text-gray-600 mt-2">Rang : <?php echo htmlspecialchars($rank); ?> | Points : <?php echo htmlspecialchars($points); ?></p>
         </div>
 
         <!-- Conteneur flex pour les deux blocs -->

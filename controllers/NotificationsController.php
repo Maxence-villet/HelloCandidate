@@ -1,5 +1,5 @@
 <?php
-// controllers/NotificationsController.php
+// Modified NotificationsController.php for US18
 require_once __DIR__ . '/../utils/database.php';
 
 class NotificationsController {
@@ -27,6 +27,18 @@ class NotificationsController {
         $result = $stmt->get_result();
         $notifications = $result->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
+
+        // Récupérer les messages et drapeaux de son depuis la session
+        $successMessage = $_SESSION['success_message'] ?? null;
+        $rankUpMessage = $_SESSION['rank_up_message'] ?? null;
+        $playApplicationSound = $_SESSION['play_application_sound'] ?? false;
+        $playLevelUpSound = $_SESSION['play_level_up_sound'] ?? false;
+
+        // Nettoyer les variables de session après utilisation
+        unset($_SESSION['success_message']);
+        unset($_SESSION['rank_up_message']);
+        unset($_SESSION['play_application_sound']);
+        unset($_SESSION['play_level_up_sound']);
 
         include __DIR__ . '/../views/notifications/list.php';
     }
@@ -85,3 +97,4 @@ class NotificationsController {
         exit;
     }
 }
+?>

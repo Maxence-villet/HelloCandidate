@@ -1,4 +1,5 @@
 <?php
+// File: profile.php
 $page_title = 'Profil de ' . htmlspecialchars($user['username']);
 include __DIR__ . '/../../utils/header/header_student.php';
 ?>
@@ -41,7 +42,7 @@ include __DIR__ . '/../../utils/header/header_student.php';
                     <img src="<?php echo htmlspecialchars($rankImagePath); ?>" alt="<?php echo htmlspecialchars($user['rank_name']); ?>" class="w-20 h-20 sm:w-24 sm:h-24">
                 </div>
                 <h3 class="text-lg font-medium text-gray-900 text-center"><?php echo htmlspecialchars($user['rank_name'] . ' ' . $user['sub_rank']); ?></h3>
-                <p class="text-sm text-gray-500 text-center">Candidatures : <?php echo htmlspecialchars($user['candidature_count']); ?></p>
+                <p class="text-sm text-gray-500 text-center">Points : <?php echo htmlspecialchars($user['points']); ?></p>
                 <div class="mt-4">
                     <p class="text-sm text-gray-600">Progrès vers le prochain rang :</p>
                     <div class="w-full bg-gray-200 rounded-full h-2.5 mt-2">

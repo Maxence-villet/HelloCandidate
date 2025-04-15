@@ -26,7 +26,7 @@ class ProfileController {
         }
 
         $stmt = $conn->prepare("
-            SELECT u.user_id, u.username, u.bio, u.candidature_count, r.rank_name, r.sub_rank, r.min_applications
+            SELECT u.user_id, u.username, u.bio, u.points, r.rank_name, r.sub_rank, r.min_applications
             FROM users u
             LEFT JOIN ranks r ON u.rank_id = r.rank_id
             WHERE u.user_id = ?
@@ -43,7 +43,7 @@ class ProfileController {
 
         $currentRankMin = $user['min_applications'];
         $nextRankMin = $this->getNextRankMinApplications($conn, $user['rank_name'], $user['sub_rank']);
-        $progress = $nextRankMin ? round(($user['candidature_count'] - $currentRankMin) / ($nextRankMin - $currentRankMin) * 100) : 100;
+        $progress = $nextRankMin ? round(($user['points'] - $currentRankMin) / ($nextRankMin - $currentRankMin) * 100) : 100;
 
         $stmt = $conn->prepare("
             SELECT b.badge_name, b.description
@@ -56,7 +56,6 @@ class ProfileController {
         $badges = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
 
-        // Récupérer les données d'activité sur 6 mois
         $activityData = $this->getActivityData($conn, $userId);
 
         include __DIR__ . '/../views/profile/profile.php';
@@ -118,9 +117,7 @@ class ProfileController {
     }
 
     private function getActivityData($conn, $userId) {
-        // Modifier pour 6 mois au lieu de 3 mois
         $sixMonthsAgo = date('Y-m-d', strtotime('-6 months'));
-        // Utiliser CURRENT_DATE pour inclure aujourd'hui
         $stmt = $conn->prepare("
             SELECT DATE(submission_date) as date, COUNT(*) as count
             FROM applications
@@ -137,22 +134,20 @@ class ProfileController {
         }
         $stmt->close();
 
-        // Générer un tableau pour les 6 derniers mois
         $startDate = new DateTime($sixMonthsAgo);
-        $endDate = new DateTime(); // Inclut aujourd'hui
+        $endDate = new DateTime();
         $interval = new DateInterval('P1D');
-        $dateRange = new DatePeriod($startDate, $interval, $endDate->modify('+1 day')); // Ajouter un jour pour inclure aujourd'hui
+        $dateRange = new DatePeriod($startDate, $interval, $endDate->modify('+1 day'));
 
         $activityData = [];
-        $maxCount = max(array_values($activity) + [1]); // Éviter division par 0
+        $maxCount = max(array_values($activity) + [1]);
         foreach ($dateRange as $date) {
             $dateStr = $date->format('Y-m-d');
             $count = isset($activity[$dateStr]) ? $activity[$dateStr] : 0;
-            // Ajuster le calcul de l'intensité pour mieux refléter les grandes valeurs
             $intensity = 0;
             if ($count > 0) {
                 if ($count >= 10) {
-                    $intensity = 4; // 10 candidatures ou plus -> intensité maximale
+                    $intensity = 4;
                 } elseif ($count >= 7) {
                     $intensity = 3;
                 } elseif ($count >= 4) {
@@ -169,3 +164,4 @@ class ProfileController {
         return $activityData;
     }
 }
+?>
