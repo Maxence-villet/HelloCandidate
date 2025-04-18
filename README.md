@@ -54,6 +54,13 @@ utils/ # Helpers (upload, DB connexion...)
 
 ---
 
+## Technologies
+
+- Tailwind
+- Chart.JS
+
+---
+
 ## 📞 Contact
 
 **Porteur du projet** : Maxence VILLET SCHOUMAKER  
