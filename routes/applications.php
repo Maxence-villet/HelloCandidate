@@ -20,9 +20,15 @@ if ($path === '/applications') {
 } elseif (preg_match('#^/applications/view/(\d+)$#', $path, $matches)) {
     // Route pour voir une candidature spécifique
     $applicationId = (int)$matches[1];
-    // Vous devrez implémenter une méthode viewApplication dans ApplicationController
-    // $controller->viewApplication($applicationId);
-    echo "Affichage de la candidature ID $applicationId (à implémenter)";
+    $controller->viewApplication($applicationId);
+} elseif ($path === '/applications/update-status') {
+    // Route pour mettre à jour le statut d'une candidature
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $controller->updateApplicationStatus();
+    } else {
+        http_response_code(405);
+        echo "Méthode non autorisée";
+    }
 } else {
     // Route non trouvée
     http_response_code(404);
